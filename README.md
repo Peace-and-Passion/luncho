@@ -4,6 +4,9 @@ A currency conversion library for Python and TypeScript that takes the price lev
 into account using Purchase Power Parity (PPP). It can convert local currency to/from US Dollar
 to/from Luncho that is a common value index. Also with the Luncho API server and the Luncho app.
 
+### (https://luncho-de-peace.org)[Demo on the official Luncho de Peace web site]
+### (https://luncho-de-peace.org/about)[Detail about Luncho, how it works]
+
 ### Examples
 
 To get the local currency value of a country from a US dollar value in US, taking the
@@ -23,7 +26,7 @@ To get the local currency value of a country from a Luncho value, taking the
  To get the Luncho value of a country from a local currency value.
 
    ```
-    const luncho_value = await this.luncho.get_luncho_from_currency(50.0, 'JP', 1.0);
+      const luncho_value = await this.luncho.get_luncho_from_currency(50.0, 'JP', 1.0);
    ```
 
 To get the US Dollar value of a country from a Luncho value, taking the
@@ -54,16 +57,13 @@ In India 100 Luncho is equivalent to 160 rupee ($2.19 US dollar), while the same
       is equivalent to 17 real ($3.12 US dollar) in Brazil. In USA, 100 Luncho is about $7.21 US
         dollar. All are the same value because everything is just 100 Luncho.
 
-### [https://luncho-de-peace.org](Demo on the official Luncho de Peace web site)
-### [https://luncho-de-peace.org/about](Detail about Luncho, how it works)
-
 ## Usages
 
-- [./luncho-python/README.markdown](README for Python client library])
-- [./luncho-typescript-fetch/README.markdown](README for TypeScript and Fetch client library)
+- (./luncho-python/README.markdown)[README for Python client library]
+- (./luncho-typescript-fetch/README.markdown)[README for TypeScript and Fetch client library]
 
-- [./server/README.org](README for the Luncho server)
-- [./app/README.org](README for the Luncho app)
+- (./server/README.org)[README for the Luncho server]
+- (./app/README.org)[README for the Luncho app]
 
 Send PRs if you make client libs for other languages.
 
