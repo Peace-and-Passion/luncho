@@ -212,8 +212,8 @@ export class Luncho extends LunchoApi {
         }
 
         return super.countryCode()
-            .then((countryCode: string) => {
-                this.countryCodeCache = countryCode;
+            .then((countryCodeJson: string) => {
+                this.countryCodeCache = JSON.parse(countryCodeJson);
                 return(this.countryCodeCache);
             });
     }

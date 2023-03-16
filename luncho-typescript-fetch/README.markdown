@@ -31,7 +31,7 @@ class Foo {
       // estimate country code from IP address
       this.countryCode = await this.luncho.get_country_code();
 
-      //  Returns the local currency value of the country from the US dollar value in US, taking the
+      //  get the local currency value of the country from the US dollar value in US, taking the
       //    price level of the country into account by factor 0 to 1.0.
       const jpy = await this.luncho.get_currency_from_US_dollar(50.0, 'JP', 1.0)
 

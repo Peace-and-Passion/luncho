@@ -1,5 +1,43 @@
 ** Luncho de Peace
 
+A currency conversion library for Python and TypeScript that takes the price level of each country
+into account using Purchase Power Parity (PPP). It can convert local currency to/from US Dollar
+to/from Luncho that is a common value index.
+
+-  get the local currency value of the country from the US dollar value in US, taking the
+   price level of the country into account by factor 0 to 1.0.
+
+   '''
+      const jpy = await this.luncho.get_currency_from_US_dollar(50.0, 'JP', 1.0)
+   '''
+
+- get the local currency value of the country from the Luncho value, taking the
+   price level of the country into account by factor 0 to 1.0.
+
+   '''
+      const local_currency_value = await this.luncho.get_currency_from_luncho(100.0, 'JP', 1.0);
+   '''
+
+ - get the Luncho value of the country from the local currency value.
+
+   '''
+    const luncho_value = await this.luncho.get_luncho_from_currency(50.0, 'JP', 1.0);
+   '''
+
+- get the US Dollar value of the country from the Luncho value, taking the
+     price level of the country into account by factor 0 to 1.0.
+
+     '''
+      const dollar_value = await this.luncho.get_US_dollar_from_luncho(100, 'JP', 1.0);
+     '''
+
+- estimate country code from IP address
+
+  '''
+      this.countryCode = await this.luncho.get_country_code();
+  '''
+
+
 *** Common value index that you can have simple lunch in every country with 100 Luncho.
 
 Useful for currency conversion on pricing pages and wages for mitigating the inequality problem among countries. It's based on purchase power parity (PPP) and World comparison Program (ICP).
