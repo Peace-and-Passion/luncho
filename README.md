@@ -66,7 +66,6 @@ In India 100 Luncho is equivalent to 191.11 Rupee ($2.31 US dollar), while the s
 - [README for the Luncho server](./server/README.org)
 - [README for the Luncho app](./app/README.org)
 
-Send PRs if you make client libs for other languages.
 
 ### API change
 
