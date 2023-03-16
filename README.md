@@ -54,9 +54,9 @@ A luncho value shows the same value in any country taking its price levels into 
       100 Luncho, you can have simple lunch in India, in Brazil, in USA, in Japan, and in any other
       countries.
 
-In India 100 Luncho is equivalent to 160 rupee ($2.19 US dollar), while the same 100 Luncho
-      is equivalent to 17 real ($3.12 US dollar) in Brazil. In USA, 100 Luncho is about $7.21 US
-        dollar. All are the same value because everything is just 100 Luncho.
+In India 100 Luncho is equivalent to 191.11 Rupee ($2.31 US dollar), while the same 100 Luncho
+      is 20.91 Real ($3.96 US dollar) in Brazil. In USA, 100 Luncho is about $7.97 US
+        dollar. All are the same value because everything is just 100 Luncho for a lunch.
 
 ## Usages
 
