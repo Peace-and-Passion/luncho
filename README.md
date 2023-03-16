@@ -1,10 +1,11 @@
 # Luncho de Peace
 
-A currency conversion library for Python and TypeScript that takes the price level of each country
-into account using Purchase Power Parity (PPP). It can convert local currency to/from US Dollar
-to/from Luncho that is a common value index. Also with the Luncho API server and the Luncho app.
+A library for currency conversion among local currency, US Dollar, and Luncho that is a
+common value index, taking the price level of each country into account using Purchase Power Parity
+(PPP).  Also with an API server and an app.
 
 - [Demo on the official Luncho de Peace web site](https://luncho-de-peace.org)
+- [Free Luncho API server](https://luncho-de-peace.org/v1/luncho-data?country_code=JP)
 - [About Luncho, how it works](https://luncho-de-peace.org/about)
 
 ### Examples
