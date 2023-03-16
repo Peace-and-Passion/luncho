@@ -4,8 +4,8 @@ A currency conversion library for Python and TypeScript that takes the price lev
 into account using Purchase Power Parity (PPP). It can convert local currency to/from US Dollar
 to/from Luncho that is a common value index. Also with the Luncho API server and the Luncho app.
 
-### (https://luncho-de-peace.org)[Demo on the official Luncho de Peace web site]
-### (https://luncho-de-peace.org/about)[Detail about Luncho, how it works]
+- [Demo on the official Luncho de Peace web site](https://luncho-de-peace.org)
+- [About Luncho, how it works](https://luncho-de-peace.org/about)
 
 ### Examples
 
@@ -59,11 +59,11 @@ In India 100 Luncho is equivalent to 160 rupee ($2.19 US dollar), while the same
 
 ## Usages
 
-- (./luncho-python/README.markdown)[README for Python client library]
-- (./luncho-typescript-fetch/README.markdown)[README for TypeScript and Fetch client library]
+- [README for Python client library](./luncho-python/README.markdown)
+- [README for TypeScript and Fetch client library](./luncho-typescript-fetch/README.markdown)
 
-- (./server/README.org)[README for the Luncho server]
-- (./app/README.org)[README for the Luncho app]
+- [README for the Luncho server](./server/README.org)
+- [README for the Luncho app](./app/README.org)
 
 Send PRs if you make client libs for other languages.
 
