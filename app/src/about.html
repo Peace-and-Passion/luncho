@@ -175,7 +175,7 @@
         <li><a target="_blank" href="https://luncho-de-peace.org">The Luncho server</a> provides data conversion between Luncho and currencies, searching, and sorting.</li>
         <li>The Luncho server provides <a target="_blank" href="https://www.luncho-de-peace.org/redoc">a set of REST API for clients</a>.</li>
         <li>Client libraries for several programming languages, the source code of the Luncho
-          server and the Luncho app are available at <a target="_blank" href="https://github.com/HIRANO-Satoshi/luncho">the Luncho repository on Github</a>.</li>
+          server and the Luncho app are available at <a target="_blank" href="https://github.com/Peace-and-Passion/luncho">the Luncho repository on Github</a>.</li>
       </ul>
     </section>
 
@@ -223,25 +223,25 @@
             dollar</li>
         </ul>
 
-        <p>You can see actual calculation <a target="_blank" href="https://github.com/HIRANO-Satoshi/luncho/blob/master/luncho_python/luncho_python/api/luncho.py#L41">here</a> in the client library and <a target="_blank" href="https://github.com/HIRANO-Satoshi/luncho/blob/master/server/src/ppp_data.py#L187">here</a> in the server code.</p>
+        <p>You can see actual calculation <a target="_blank" href="https://github.com/Peace-and-Passion/luncho/blob/master/luncho_python/luncho_python/api/luncho.py#L41">here</a> in the client library and <a target="_blank" href="https://github.com/Peace-and-Passion/luncho/blob/master/server/src/ppp_data.py#L187">here</a> in the server code.</p>
 
     </section>
 
     <section id="data">
-      <h4><a target="_blank" href="https://github.com/HIRANO-Satoshi/luncho/tree/master/server/data">Data</a></h4>
+      <h4><a target="_blank" href="https://github.com/Peace-and-Passion/luncho/tree/master/server/data">Data</a></h4>
 
       <ul class="browser-default">
-        <li><a target="_blank" href="https://github.com/HIRANO-Satoshi/luncho/blob/master/server/data/imf-dm-export-20221225.csv">server/data/imf-dm-export-20221225.csv</a>: Implied PPP conversion rate from <a target="_blank" href="https://www.imf.org/en/Publications/WEO/weo-database/2022/October">IMF World Economic Outlook Database (October, 2022)</a>
+        <li><a target="_blank" href="https://github.com/Peace-and-Passion/luncho/blob/master/server/data/imf-dm-export-20221225.csv">server/data/imf-dm-export-20221225.csv</a>: Implied PPP conversion rate from <a target="_blank" href="https://www.imf.org/en/Publications/WEO/weo-database/2022/October">IMF World Economic Outlook Database (October, 2022)</a>
           <ul class="class="browser-default"">
             <li>To update, open <a target="_blank" href="https://www.imf.org/external/datamapper/PPPEX@WEO/OEMDC/ADVEC/WEOWORLD">PPPEX data at IMF database</a> and press "All Country Data" to download a XLS file. Open the XLS file and save it as a CSV file.</li>
             <li>Each country name is defined as "Table Name" in ICP-2017 metadata described below.</li>
           </ul>
         </li>
 
-        <li><a href="https://github.com/HIRANO-Satoshi/luncho/blob/master/server/data/imf-dm-fix.json">server/data/imf-dm-fix.json</a> includes lacking data for North Macedonia.</li>
-        <li><a href="https://github.com/HIRANO-Satoshi/luncho/blob/master/server/data/imf-dm-mapping.json">server/data/imf-dm-mapping.json</a> includes some mapping of country name contained in imf-dm-export-*.csv to pycountry.</li>
+        <li><a href="https://github.com/Peace-and-Passion/luncho/blob/master/server/data/imf-dm-fix.json">server/data/imf-dm-fix.json</a> includes lacking data for North Macedonia.</li>
+        <li><a href="https://github.com/Peace-and-Passion/luncho/blob/master/server/data/imf-dm-mapping.json">server/data/imf-dm-mapping.json</a> includes some mapping of country name contained in imf-dm-export-*.csv to pycountry.</li>
 
-        <li><a target="_blank" href="https://github.com/HIRANO-Satoshi/luncho/blob/master/server/data/Data_Extract_From_ICP_2017_Metadata.csv">server/data/Data_Extract_From_ICP_2017_Metadata.csv</a>: ICP-2017 metadata from  <a target="_blank" href="https://databank.worldbank.org/source/icp-2017?preview=on">ICP-2017 database</a>
+        <li><a target="_blank" href="https://github.com/Peace-and-Passion/luncho/blob/master/server/data/Data_Extract_From_ICP_2017_Metadata.csv">server/data/Data_Extract_From_ICP_2017_Metadata.csv</a>: ICP-2017 metadata from  <a target="_blank" href="https://databank.worldbank.org/source/icp-2017?preview=on">ICP-2017 database</a>
           <ul class="class="browser-default"">
             <li>To update, extracted the following metadata</li>
             <li style="margin-left: 4rem;">Code,Long Name,Currency Unit,Table Name,Household consumption price survey: Geographical coverage</li>
@@ -255,7 +255,7 @@
             </li>
           </ul>
         </li>
-        <li><a href="https://github.com/HIRANO-Satoshi/luncho/blob/master/server/data/Data_Extract_From_ICP_Fix.csv">server/data/Data_Extract_From_ICP_Fix.csv</a> includes lacking data for Andorra and North Korea.</li>
+        <li><a href="https://github.com/Peace-and-Passion/luncho/blob/master/server/data/Data_Extract_From_ICP_Fix.csv">server/data/Data_Extract_From_ICP_Fix.csv</a> includes lacking data for Andorra and North Korea.</li>
         <li>Exchange rates from <a target="_blank" href="https://exchangerate.host">exchangerate.host</a>
         </li>
         <li><a target="_blank" href="https://https://github.com/flyingcircusio/pycountry">Pycountry</a> and <a target="_blank" href="https://https://github.com/flyingcircusio/pycountry-convert">Pycountry-convert</a> for conversion of country names and currency codes.
@@ -271,20 +271,20 @@
         <li>PPP conversion rate is updated irregularly and does not reflect monthly inflation
           data. Sorry for inconvenience.</li>
         <li>
-          The Luncho calculation reflects the PPP value of a target country and the daily exchange rate of SDR, but does not the daily exchange rate of the target country. The daily exchange rate of the target country is reflected only once a year when Dr Hirano replaces PPP data with the year's PPP estimation from IMF World Economic Outlook</a>. See <a href="https://github.com/HIRANO-Satoshi/luncho/issues/24" target="_blank">this issue for detail</a>.
+          The Luncho calculation reflects the PPP value of a target country and the daily exchange rate of SDR, but does not the daily exchange rate of the target country. The daily exchange rate of the target country is reflected only once a year when Dr Hirano replaces PPP data with the year's PPP estimation from IMF World Economic Outlook</a>. See <a href="https://github.com/Peace-and-Passion/luncho/issues/24" target="_blank">this issue for detail</a>.
         </li>
         <li>
           Although you can expect to have simple lunch in restaurants for local residents with 100
           Luncho, restaurants for tourists must be much more expensive.
         </li>
-        <li>There may be differences of price levels in a country. For example, it's cheap in rural areas while expensive in urban areas. The Luncho does not reflect such difference. You can see <a target="_blank" href="https://github.com/HIRANO-Satoshi/luncho/blob/master/server/data/Data_Extract_From_ICP_2017_Metadata.csv">one of our data files that we got from the ICP web site</a> to know how the PPP data was acquired in each country. Here are two examples from it. In Cambodia they investigated both urban and rural areas, while they did only urban areas in Colombia.
+        <li>There may be differences of price levels in a country. For example, it's cheap in rural areas while expensive in urban areas. The Luncho does not reflect such difference. You can see <a target="_blank" href="https://github.com/Peace-and-Passion/luncho/blob/master/server/data/Data_Extract_From_ICP_2017_Metadata.csv">one of our data files that we got from the ICP web site</a> to know how the PPP data was acquired in each country. Here are two examples from it. In Cambodia they investigated both urban and rural areas, while they did only urban areas in Colombia.
           <ul>
             <li>KHM,Kingdom of Cambodia,KHR: Riel,Cambodia,Urban and Rural</li>
             <li>COL,Republic of Colombia,COP: Colombian Peso,Colombia,Urban only</li>
           </ul>
         </li>
       </ul>
-      <p>Issues must be submitted on <a target="_blank" href="https://github.com/HIRANO-Satoshi/luncho/issues">the issues page on Github</a>. English correction is also welcome.</p>
+      <p>Issues must be submitted on <a target="_blank" href="https://github.com/Peace-and-Passion/luncho/issues">the issues page on Github</a>. English correction is also welcome.</p>
     </section>
 
     <section>
@@ -292,7 +292,7 @@
 
       <p>
         HIRANO Satoshi, Ph.D.  &emsp;<a target="_blank" href="https://rq.land/help/">Peace and Passion</a>, <a target="_blank" href="https://www.iis.u-tokyo.ac.jp/en/">University of Tokyo IIS</a>
-        <p>Contact: hirano-satoshi @@@@ peace-and-passion.com        (Issues must be submitted on <a target="_blank" href="https://github.com/HIRANO-Satoshi/luncho/issues">the issues page on Github</a>.)
+        <p>Contact: hirano-satoshi @@@@ peace-and-passion.com        (Issues must be submitted on <a target="_blank" href="https://github.com/Peace-and-Passion/luncho/issues">the issues page on Github</a>.)
         </p>
     </section>
 

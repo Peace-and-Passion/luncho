@@ -15,7 +15,7 @@
 
 ```
     cd LOCATION
-    git clone https://github.com/HIRANO-Satoshi/luncho.git
+    git clone https://github.com/Peace-and-Passion/luncho.git
     cd luncho/luncho-python
 
     cd YOUR_SRC
