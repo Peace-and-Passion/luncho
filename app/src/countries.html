@@ -29,7 +29,7 @@
      backgrond-color: #4466f0;
    }
    md-range input[type=range] {
-     min-width: 260px;
+     min-width: 150px;
      width: 30%;
    }
    .flex-right {
@@ -67,7 +67,7 @@
       Factor &emsp;
       <md-range change.delegate="factorChanged()" value.bind="factor"
                 min="0" max="100"></md-range>
-      &emsp;${factor}%
+      &emsp;Luncho[${factor}%]
     </div>
 
 
@@ -103,7 +103,7 @@
           <th aut-sort="key: currency_name">Currency</th>
           <th if.bind="showCode"></th>
           <th aut-sort="key: dollar_value; default: desc">US Dollar</th>
-          <th show.bind="factor < 100" aut-sort="key: dollar_value_with_factor; default: desc">With factor</th>
+          <th show.bind="factor < 100" aut-sort="key: dollar_value_with_factor; default: desc">Luncho[${factor}%]</th>
         </tr>
       </thead>
 
