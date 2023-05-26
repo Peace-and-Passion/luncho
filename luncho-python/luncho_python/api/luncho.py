@@ -66,10 +66,17 @@ class Luncho():
 
         lunchoData: LunchoData = self.get_luncho_data(countryCode, **kwargs)
 
-        US_value = lunchoData.dollar_per_luncho * lunchoValue
-        local_currency_value = US_value * lunchoData.ppp
-        local_currency_value_with_factor = US_value - (US_value - local_currency_value) * factor
+        US_value = lunchoData.dollar_per_luncho * lunchoValue;
+        local_currency_value = US_value * lunchoData.ppp;
+        dollar_value = local_currency_value / lunchoData.exchange_rate;
+        dollar_value_with_factor = US_value - (US_value - dollar_value) * factor;
+
+        local_currency_value_with_factor = dollar_value_with_factor * lunchoData.exchange_rate;
         return local_currency_value_with_factor
+
+        # US_value = lunchoData.dollar_per_luncho * lunchoValue
+        # local_currency_value = US_value * lunchoData.ppp
+        # local_currency_value_with_factor = US_value - (US_value - local_currency_value) * factor
 
     def get_luncho_from_currency(self, currencyValue: float, countryCode: str, **kwargs) -> float:
         '''
