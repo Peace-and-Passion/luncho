@@ -81,7 +81,14 @@ export class Luncho extends LunchoApi {
             .then((lunchoData: LunchoData) => {
                 const US_value = lunchoData.dollar_per_luncho * lunchoValue;
                 const local_currency_value = US_value * lunchoData.ppp;
-                const local_currency_value_with_factor = US_value - (US_value - local_currency_value) * factor;
+                const dollar_value = local_currency_value / lunchoData.exchange_rate;
+                const dollar_value_with_factor = US_value - (US_value - dollar_value) * factor;
+
+                const local_currency_value_with_factor = dollar_value_with_factor * lunchoData.exchange_rate;
+
+                // const US_value = lunchoData.dollar_per_luncho * lunchoValue;
+                // const local_currency_value = US_value * lunchoData.ppp;
+                // const local_currency_value_with_factor = US_value - (US_value - local_currency_value) * factor;
                 return local_currency_value_with_factor;
             });
     }
