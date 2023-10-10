@@ -79,7 +79,7 @@ def load_exchange_rates(use_dummy_data: bool):
                     fixer_exchange_rate = json.loads(return_data.read())
 
                     # always EUR with free plan. 160 is for an incident occured in 2023 that lacks many currencies
-                    if fixer_exchange_rate['base'] == 'EUR' and len(fixer_exchange_rate['rates']) > 160:
+                    if fixer_exchange_rate.get('base') == 'EUR' and fixer_exchange_rate.get('rates') and len(fixer_exchange_rate.get('rates')) > 160:
                         logging.info('Fetched exchange rate from %s', api_url)
 
                         # save it for emergency
