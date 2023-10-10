@@ -1,8 +1,6 @@
-# Luncho de Peace
+# Luncho de Peace: Price level calculator
 
-A library for currency conversion among local currency, US Dollar, and Luncho that is a
-common value index, taking the price level of each country into account using Purchase Power Parity
-(PPP).  Also with an API server and an app.
+Pricing calculator that respects the price levels of countries using Purchase Power Parity (PPP). A library for currency conversion among local currency, US Dollar, and Luncho that is a common value index. Also with an API server and an app.
 
 - [Demo on the official Luncho de Peace web site](https://luncho-de-peace.org)
 - [Free Luncho API server](https://luncho-de-peace.org/v1/luncho-data?country_code=JP)

@@ -9,9 +9,16 @@
 
 *** Local installation
 
-  - To install the server part first and generate client libraries as instructed on ../server/README.org
+  - You need to build the client library for Typescript firstly. That will
+    do "yarn link" to publish the client library locally.
 
-   yarn install
+    cd ../luncho-typescript-fetch
+    yarn install
+
+  - Install npm modules for the Luncho app.
+
+    cd ../app
+    yarn install
 
 *** Run on webpack devserver
   - "yarn start" does "yarn link luncho-typescript-fetch' automatically.
