@@ -28,3 +28,5 @@ fi
 
 . luncho_pyenv/bin/activate
 pip install -U -r requirements.txt
+
+. luncho_pypyenv/bin/activate
