@@ -35,17 +35,17 @@ class LunchoData(BaseModel):   #pylint: disable=too-few-public-methods
 
     currency_code: CurrencyCode     # Currency code
     currency_name: str              # Currency name
-    exchange_rate: Optional[float]  # Exchange rate per US Dollar. 0 if not available.
+    exchange_rate: Optional[float] = None # Exchange rate per US Dollar. 0 if not available.
     #dollar_value: float             # US Dollar value of the luncho
-    ppp: Optional[float]            # PPP value. 0 if not available.
-    dollar_per_luncho: Optional[float] # dollar/luncho rate
-    expiration: Optional[float]     # Data expiration in unix time. You need to call APIs after this time.
+    ppp: Optional[float] = None           # PPP value. 0 if not available.
+    dollar_per_luncho: Optional[float] = None # dollar/luncho rate
+    expiration: Optional[float] = None   # Data expiration in unix time. You need to call APIs after this time.
     #dollar_value: float
     #local_currency_value: float
 
 class Country(LunchoData):   #pylint: disable=too-few-public-methods
     ''' Internal data with yearly PPP values. '''
-    year_ppp: Optional[dict[int, float]]  # { year: ppp }  Optional
+    year_ppp: Optional[dict[int, float]] = None  # { year: ppp }  Optional
 
 # class CountryCodeName(BaseModel):
 #     ''' Country code and name. '''

@@ -9,14 +9,16 @@ from __future__ import annotations
 import os
 
 # Configurable constants
-GCS_BUCKET: str | None = os.environ.get('GCS_BUCKET', None)
-FIXER_API_KEY: str | None = os.environ.get('FIXER_API_KEY', None)
+GCS_BUCKET: str | None    = os.environ.get('GCS_BUCKET', None)
+FOREX_API_KEY: str | None = os.environ.get('FOREX_API_KEY', None)
+FOREX_HOURLY_UPDATE = False   # True to fetch forex date hourly, False for daily
 
-FIXER_URLS          = ['http://data.fixer.io/api/']
-FREE_EXCHANGERATE_URLS = ['https://api-us.exchangerate.host/', 'https://api.exchangerate.host/', 'https://api-eu.exchangerate.host/']
-EXCHANGERATE_URLS   = FIXER_URLS + FREE_EXCHANGERATE_URLS if FIXER_API_KEY else FREE_EXCHANGERATE_URLS
+EXCHANGERATE_URLS         = [ 'https://openexchangerates.org/api/latest.json?app_id=' ]
+#EXCHANGERATE_URLS         = [ 'https://exchangerate.host/api/latest?access_key=' ]
+#EXCHANGERATE_URLS        = ['http://data.fixer.io/api/latest?access_key=']
 
-DUMMY_FIXER_EXCHANGE_FILE = 'data/dummy-fixer-exchange-2020-11-11.json'
+LAST_FIXER_EXCHANGE_FILE  = 'data/exchange-last.json'
+DUMMY_FIXER_EXCHANGE_FILE  = 'data/dummy-fixer-exchange-2020-11-11.json'
 
 # Luncho client library languages
 #  'language': 'option'
@@ -42,4 +44,3 @@ API_V1_STR: str = "/v1"
 IS_APPENGINE   = os.environ.get('GAE_APPLICATION') is not None  # True if running on Google App Engine
 
 Openapi_Schema_File = 'data/openapi_schema.json'
-LAST_FIXER_EXCHANGE_FILE  = 'data/exchange-last.json'

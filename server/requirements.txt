@@ -15,6 +15,7 @@ pycountry
 pycountry-convert
 pytest
 requests
+typing-inspect
 uvicorn
 #orjson does not support Pypy
 #ujson does not support Pypy

@@ -15,6 +15,7 @@ mypy-extensions
 pycountry
 pycountry-convert
 pytest
+typing-inspect
 requests
 uvicorn
 #orjson does not support Pypy

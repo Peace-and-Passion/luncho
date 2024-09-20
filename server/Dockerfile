@@ -24,7 +24,7 @@ ADD . /app
 RUN pip install --upgrade pip && \
     pip install virtualenv
 
-#RUN virtualenv --python pypy3 pypyenv
+#RUN virtualenv --python pypy3 luncho_pypyenv
 RUN /app/bin/install-packages.sh
 
 ENTRYPOINT /app/bin/start-gunicorn.sh

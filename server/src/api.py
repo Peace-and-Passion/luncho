@@ -9,6 +9,7 @@ from typing import Optional, cast
 
 from fastapi import Header, APIRouter
 from fastapi_utils.openapi import simplify_operation_ids
+import typing_inspect
 
 from src import exchange_rate
 from src.utils import error
