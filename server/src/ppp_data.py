@@ -62,6 +62,7 @@ def init(use_dummy_data: bool) -> None:  #pylint: disable=too-many-statements,un
           use_dummy_data  True to use dummy data file.
     '''
 
+    from src import exchange_rate  #pylint: disable=import-outside-toplevel
     global Country_Metadata, Countries, CountryCode_Names #pylint: disable=invalid-name,global-variable-not-assigned
 
     if not os.getcwd().endswith('server') and not conf.IS_APPENGINE:
@@ -177,7 +178,7 @@ def init(use_dummy_data: bool) -> None:  #pylint: disable=too-many-statements,un
                 currency_code = Country_Metadata[country_code]['currency_code'],
                 continent_code = continent_code,
                 currency_name = Country_Metadata[country_code]['currency_name'],
-                country_name = Country_Metadata[country_code]['name']
+                country_name = Country_Metadata[country_code]['name'],
             )
             CountryCode_Names[country_code] = Country_Metadata[country_code]['name']
 

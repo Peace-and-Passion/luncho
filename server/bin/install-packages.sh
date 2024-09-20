@@ -1,4 +1,4 @@
-echo installing pypyenv with pypy3
+echo installing luncho_pypyenv with pypy3
 
 deactivate 2>/dev/null || true
 if [ "`which pypy3`" == "" ]; then
@@ -8,23 +8,23 @@ if [ "`which virtualenv`" == "" ]; then
     pip install virtualenv
 fi
 
-if [ ! -e pypyenv ]; then
-   virtualenv --python pypy3 pypyenv
+if [ ! -e luncho_pypyenv ]; then
+   virtualenv --python pypy3 luncho_pypyenv
 fi
 
-. pypyenv/bin/activate
+. luncho_pypyenv/bin/activate
 pip install -U -r requirements-pypy.txt
 
 
-echo installing pyenv with Python 3.9
+echo installing luncho_pyenv with Python 3.9
 
 deactivate 2>/dev/null || true
 if [ "`which python3`" == "" ]; then
     brew install python3
 fi
-if [ ! -e pyenv ]; then
-   virtualenv --python python3 pyenv
+if [ ! -e luncho_pyenv ]; then
+   virtualenv --python python3 luncho_pyenv
 fi
 
-. pyenv/bin/activate
+. luncho_pyenv/bin/activate
 pip install -U -r requirements.txt

@@ -39,11 +39,12 @@ SDR_Per_Dollar: float = 0   # filled in load_exchange_rates()  1 SDR = $1.4...
 
 class FixerExchangeRate(TypedDict):
     ''' Exchange rate struct returned by Fixer API. '''
-    success: bool    # true if API success
+
+    rates: dict[CurrencyCode, float]   # { "AED": 4.337445, ...}
     timestamp: int   # 1605081845
-    base: str        # always "EUR"
-    date: str        #"2020-11-11",
-    rates: dict[CurrencyCode, float]   # EUR based rates, "AED": 4.337445
+    base: str        # "USD" if openexchangerates.org, "EUR" if fixer.io and exchangerate.host
+    #success: bool   # true if API success. none from openexchangerates.org
+    #date: str       #"2020-11-11", none from openexchangerates.org
 
 def exchange_rate_per_USD(currencyCode: CurrencyCode) -> float: #pylint: disable=invalid-name
     ''' Returns exchange rate per USD for the currencyCode.
@@ -59,9 +60,8 @@ def load_exchange_rates(use_dummy_data: bool):
         pytest test/test_server.py::test_server_api_error
     '''
 
-    global Exchange_Rates, SDR_Per_Dollar, last_load, expiration #pylint: disable=invalid-name,global-variable-not-assigned,global-statement
-    fixer_exchange_rate: FixerExchangeRate
-    new_exchange_rate: dict[CurrencyCode, float] = {}
+    global Exchange_Rates, SDR_Per_Dollar, last_load, expiration
+    fixer_exchange_rate: FixerExchangeRate = {}
     success: bool = False
     err_msg: str = ''
 
@@ -71,21 +71,29 @@ def load_exchange_rates(use_dummy_data: bool):
     else:
         # try API URLs that are Fixer compatible
         for api_url in conf.EXCHANGERATE_URLS:
-            url = api_url + 'latest' + ('?access_key=' + conf.FIXER_API_KEY if conf.FIXER_API_KEY else '')
+            url = api_url + (conf.FOREX_API_KEY or '')
             request =  urllib.request.Request(url, headers=conf.Header_To_Fetch('en'))
 
             try:
-                with urllib.request.urlopen(request) as return_data: #type: http.client.HTTPResponse
+                with urllib.request.urlopen(request) as return_data:
                     fixer_exchange_rate = json.loads(return_data.read())
 
-                    # always EUR with free plan. 160 is for an incident occured in 2023 that lacks many currencies
-                    if fixer_exchange_rate.get('base') == 'EUR' and fixer_exchange_rate.get('rates') and len(fixer_exchange_rate.get('rates')) > 160:
-                        logging.info('Fetched exchange rate from %s', api_url)
+                    # 160 is for an incident occured in 2023 that lacks many currencies
+                    if fixer_exchange_rate.get('rates') and len(fixer_exchange_rate.get('rates')) > 160:
+                        logging.info(f"Fetched {len(fixer_exchange_rate.get('rates'))} exchange rates from {api_url}")
 
-                        # save it for emergency
-                        upload_exchange_rate(fixer_exchange_rate)
-                        success = True
-                        break
+                    # if base is not USD, convert rates into USD. fixer returns in EUR
+                    if fixer_exchange_rate.get('base') != 'USD':
+                        new_exchange_rates: dict[CurrencyCode, float] = {}
+                        usd: float = fixer_exchange_rate['rates']['USD']  # USD per euro
+                        for currecy_code, euro_value in fixer_exchange_rate['rates'].items():
+                            new_exchange_rates[currecy_code] = euro_value / usd   # store in USD
+                        fixer_exchange_rate['rates'] = new_exchange_rates
+
+                    # save it for emergency
+                    upload_exchange_rate(fixer_exchange_rate)
+                    success = True
+                    break
 
             except urllib.error.URLError as ex:
                 err_msg = str(ex)
@@ -107,20 +115,15 @@ def load_exchange_rates(use_dummy_data: bool):
             else:
                 raise Exception('Failed to fetch exchange rates either from API and save data') #pylint: disable=broad-exception-raised
 
-    # build Exchange_rates which is USD based rates from fixer_exchange_rate which is EUR based
-    usd: float = fixer_exchange_rate['rates']['USD']  # USD per euro
-    for currecy_code, euro_value in fixer_exchange_rate['rates'].items():  #type: CurrencyCode, float
-        new_exchange_rate[currecy_code] = euro_value / usd   # store in USD
-
     # update globals
     with global_variable_lock:
-        Exchange_Rates = new_exchange_rate
+        Exchange_Rates = fixer_exchange_rate.get('rates')
         SDR_Per_Dollar = Exchange_Rates['XDR']
         last_load = time.time()
         expiration = time_to_update() + 40  # expires 40 sec after Forex data update time
 
     # update PPP data
-    from src import ppp_data  #pylint: disable=import-outside-toplevel
+    from src import ppp_data
     ppp_data.update()
 
 
@@ -155,7 +158,7 @@ def time_to_update() -> float:
     ''' Returns next update time in POSIX time. '''
     now: datetime.datetime
 
-    if conf.FIXER_API_KEY:
+    if conf.FOREX_HOURLY_UPDATE:
         # Fixer updates every hour. We update 3 minute every hour. 00:03, 01:03, 02:03...
         #
         #  now = datetime.datetime(2021, 5, 21, 15, 26, 27, 291409)

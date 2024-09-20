@@ -33,18 +33,25 @@
 
 ** Installation
 
-*** (Optional) Access key for foreign exchange (forex) rate data
+*** API key for foreign exchange (forex) rate data
 
-  - By default, we use exchangerate.host which is a free exchange rate data provider. The Luncho
-    server updates the forex data at 00:06 UTC every day. LunchoData expires at the time. If 24-hour
-    update cycle of the forex data is OK for you, skip to the installation as you don't need to do
-    anything about the exchange rate.
+  - The Luncho server supports openexchangerates.org, exchangerate.host, and fixer.io. Edit
+    src/conf.py to set one to EXCHANGERATE_URLS. Since openexchangerates.org to provides 1000/month
+    free access, it is the default.
 
-  - However, if you want to use one hour update rather than the default 24-hour update, create a
-    user account on Fixer.io and set your access key to FIXER_API_KEY environment variable or write
-    it in app.yaml if you run on Google App Engine. If you don't use, don't set it.
+    EXCHANGERATE_URLS         = [ 'https://openexchangerates.org/api/latest.json?app_id=' ]
 
-    export FIXER_API_KEY=XXXXXXXX
+  - Obtain an API key of the above selected service, and set it to the FOREX_API_KEY environment
+    variable (of shell) or write it in app.yaml if you run on Google App Engine.
+
+    export FOREX_API_KEY=XXXXXXXX
+
+  - The Luncho server updates the forex data daily or hourly. The default is daily and the Luncho
+    server fetches the forex data at 00:06 UTC every day. If you prefer hourly update, set
+    FOREX_HOURLY_UPDATE in conf.py to True.
+
+    FOREX_HOURLY_UPDATE = True
+
 
 *** (Optional) Google Cloud Storage
 
@@ -75,7 +82,7 @@
 
     bin/install-packages.sh
 
-  - You have pypyenv dir that includes site-packages.
+  - You have luncho_pypyenv dir that includes site-packages.
 
 ** Build client libraries and the app
 

@@ -4,6 +4,6 @@ __pycache__
 .mypy_cache
 .dockerignore
 .pytest_cache
-pyenv
-pypyenv
+luncho_pyenv
+luncho_pypyenv
 test

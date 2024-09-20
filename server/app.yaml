@@ -3,15 +3,16 @@
 #
 
 env_variables:
+  FOREX_API_KEY: 9f688c4d534b40bf8dddef701101c8fe
 
   # If you use Google Cloud Storage for exchange rate backup, set a bucket name
   # Usually it is the same as the URL of GAE app. If you don't use, don't set it.
   GCS_BUCKET:      demandic-production.appspot.com
 
-  # If you have Fixer API key for exchange rates, set it. Otherwise we use a free API.
-  # FIXER_API_KEY:   XXXXXXXX
+  # set you API key for exchange rates
+  # FOREX_API_KEY:   XXXXXXXX
 
-runtime: python39
+runtime: python311
 entrypoint: gunicorn -b :$PORT --access-logfile - --error-logfile - -k uvicorn.workers.UvicornH11Worker -c gunicorn_config.py main:app
 instance_class: F1
 default_expiration: "100s"
