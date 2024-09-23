@@ -13,6 +13,7 @@ from luncho_python.api_client import ApiClient, Endpoint as _Endpoint
 from luncho_python.model.luncho_data import LunchoData
 
 CountryCode = str
+CurrencyCode = str
 
 class Luncho():
     ''' Fast Luncho API client by caching.
@@ -31,6 +32,7 @@ class Luncho():
         self.allLunchoDatasExpiration: float = 0.0
         self.countryCache: Dict[CountryCode, str] = {}       # { CountryCode: name }
         self.countryCodeCache: str
+        self.exchangeRatesCache: Dict[CurrencyCode, float]  = {} # exchange rates cache
 
 
     def get_currency_from_US_dollar(self, usdValue: float, countryCode: str, factor: float = 1.0, **kwargs) -> float:
@@ -148,6 +150,7 @@ class Luncho():
 
         @return Promise for a dict of Luncho data of all countries.
         '''
+
         if self.allLunchoDatasExpiration > time.time():
             return self.lunchoDataCache
 
@@ -155,6 +158,7 @@ class Luncho():
         assert self.lunchoDataCache
         assert self.lunchoDataCache['JP']
         self.allLunchoDatasExpiration = self.lunchoDataCache['JP'].expiration
+        self.exchangeRatesCache = {}
         return self.lunchoDataCache
 
 
@@ -168,6 +172,27 @@ class Luncho():
 
         self.countryCodeCache = self.lunchoApi.country_code(**kwargs)
         return self.countryCodeCache
+
+    def get_exchange_rates(self) -> Dict[CurrencyCode, float]:
+        '''
+        Returns a dict of currency code to USD based exchange rate of all supported countries such as {'USD': 1.0, 'JPY' : 0.94, ...}.
+
+         @return a dict of currency code to USD based exchange rate of all supported countries. {currency code: USD based exchange rate}
+        '''
+
+        lunchoData: LunchoData
+
+        if self.exchangeRatesCache:
+            return self.exchangeRatesCache
+
+        self.get_all_luncho_data()
+
+        self.exchangeRatesCache = {}
+        for lunchoData in self.lunchoDataCache.values():
+            self.exchangeRatesCache[lunchoData.currency_code] = lunchoData.exchange_rate
+        self.exchangeRatesCache['expiration'] = self.lunchoDataCache['JP'].expiration
+        return self.exchangeRatesCache
+
 
     def __getattr__(self, method_name):
         ''' Delegates all other methods to self.lunchoApi. '''
