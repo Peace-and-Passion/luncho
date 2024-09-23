@@ -175,7 +175,10 @@ class Luncho():
 
     def get_exchange_rates(self) -> Dict[CurrencyCode, float]:
         '''
-        Returns a dict of currency code to USD based exchange rate of all supported countries such as {'USD': 1.0, 'JPY' : 0.94, ...}.
+        Returns a dict of currency code to USD based exchange rate of all supported
+        countries such as {'USD': 1.0, 'JPY' : 0.94, 'expiration': 1726553240.844584 ...}.
+
+        The key 'expiration' contains expiration time in UTC in float.
 
          @return a dict of currency code to USD based exchange rate of all supported countries. {currency code: USD based exchange rate}
         '''
@@ -190,7 +193,10 @@ class Luncho():
         self.exchangeRatesCache = {}
         for lunchoData in self.lunchoDataCache.values():
             self.exchangeRatesCache[lunchoData.currency_code] = lunchoData.exchange_rate
+
+        # save expiration
         self.exchangeRatesCache['expiration'] = self.lunchoDataCache['JP'].expiration
+
         return self.exchangeRatesCache
 
 
