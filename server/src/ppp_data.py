@@ -182,7 +182,7 @@ def load_ppp_data(force_download: bool = False, use_dummy_data: bool = False) ->
     except urllib.error.URLError as ex:
         # network error! we use the last PPP data instead.
         if ppp_data_saved:
-            logging.error('Failed to fetch PPP data from %s, falling down to the last data: %s ', conf.PPP_API, str(ex))
+            logging.warn('Failed to fetch PPP data from %s, falling down to the last data: %s ', conf.PPP_API, str(ex))
             parse_ppp_data(ppp_data_saved)
         else:
             logging.error('Failed to fetch PPP data from %s, give up: %s ', conf.PPP_API, str(ex))
@@ -232,7 +232,7 @@ def download_ppp_data() -> dict | None:
         try:
             return json.loads(storage.Client().bucket(conf.GCS_BUCKET).blob(conf.PPP_FILE).download_as_string())
         except Exception as ex:
-            logging.error('Failed to download saved PPP file from GCS bucket %s: %s ', conf.GCS_BUCKET, str(ex))
+            logging.warn('Failed to download saved PPP file from GCS bucket %s: %s ', conf.GCS_BUCKET, str(ex))
 
     try:
         with open('data/' + conf.PPP_FILE, newline='', encoding="utf_8_sig") as ppp_data_file:

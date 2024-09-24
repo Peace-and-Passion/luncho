@@ -98,8 +98,7 @@ def load_exchange_rates(use_dummy_data: bool):
                 err_msg = str(ex)
 
         if not success:
-            logging.error('Failed to fetch exchange rates from %s, falling down to the last data: %s ',
-                          conf.EXCHANGERATE_URLS, err_msg)
+            logging.warn('Failed to fetch exchange rates from %s, falling down to the last data: %s ', conf.EXCHANGERATE_URLS, err_msg)
 
             # reuse existing data if there is
             if Exchange_Rates:
@@ -196,11 +195,12 @@ def download_exchange_rate() -> FixerExchangeRate | None:
             blob = storage.Client().bucket(conf.GCS_BUCKET).blob(conf.EXCHANGE_RATE_FILE)
             return json.loads(blob.download_as_string())
         except Exception as ex:
-            logging.error('Failed to download saved exchange rate from GCS bucker %s: %s ',
-                          conf.GCS_BUCKET, str(ex))
-            raise
-    else:
+            logging.warn('Failed to download saved exchange rate from GCS bucker %s: %s ', conf.GCS_BUCKET, str(ex))
+
+    try:
         with open('data/' + conf.EXCHANGE_RATE_FILE, newline='', encoding="utf_8_sig") as fixer_last_file:
             return json.load(fixer_last_file)
+    except Exception as ex:
+        logging.error('Failed to open exchange rate backup file from %s: %s ', 'data/' + conf.EXCHANGE_RATE_FILE, str(ex))
 
     return None
