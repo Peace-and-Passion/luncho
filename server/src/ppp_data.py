@@ -16,9 +16,14 @@ import json
 import logging
 import os
 import re
+import time
+import urllib.request
+import urllib.error
 from typing import cast, Any, TypedDict
 import pycountry
 import pycountry_convert
+
+from google.cloud import storage
 
 import conf
 from conf import SDR_PER_LUNCHO
@@ -55,21 +60,12 @@ kosovo.numeric = "383"
 kosovo.official_name = "Kosovo"
 
 
-def init(use_dummy_data: bool) -> None:  #pylint: disable=too-many-statements,unused-argument
-    ''' Initialize this module.
-
-       Args:
-          use_dummy_data  True to use dummy data file.
+def load_metadata() -> None:
+    '''  Loads country metadata from data/Data_Extract_From_ICP_2017_Metadata.csv.
     '''
 
-    from src import exchange_rate  #pylint: disable=import-outside-toplevel
-    global Country_Metadata, Countries, CountryCode_Names #pylint: disable=invalid-name,global-variable-not-assigned
-
-    if not os.getcwd().endswith('server') and not conf.IS_APPENGINE:
-        os.chdir("server")
-
     def process_one_country(data: Any) -> None:
-        ''' Process a country metadata and put it in Country_Metadata map.
+        ''' Process a country metadata and put it in the Country_Metadata map.
 
          ICP_FILE contains for countries and regions as following.
 
@@ -79,10 +75,12 @@ def init(use_dummy_data: bool) -> None:  #pylint: disable=too-many-statements,un
 
         '''
 
+        global Country_Metadata
         country_data: Any
-
-        country_code3 = data['Code']     # ISO 3 letter code
+        country_code: str                     # ISO 2 letter code
+        country_code3: str = data['Code']     # ISO 3 letter code
         del data['Code']
+
         if country_code3 == 'BON': # bonaire, but not found in IMF PPP data
             country_code3 = 'BES'
         if country_code3 == 'KSV': # Kosovo is not found in pycountry but in IMF PPP data
@@ -100,14 +98,6 @@ def init(use_dummy_data: bool) -> None:  #pylint: disable=too-many-statements,un
             data['currency_name'] = re.sub(' \\(.*?\\)', '', currency_unit[5:])
             del data['Currency Unit']
 
-            data['table_name'] = data['Table Name']
-            del data['Table Name']
-            # coverage
-            coverage: str | None = data.get('Household consumption price survey: Geographical coverage')
-            del data['Household consumption price survey: Geographical coverage']
-            if coverage:
-                data['coverage'] = coverage
-
             Country_Metadata[country_code] = cast(CountryMetadataType, dict(data))
             #print(str(Country_Metadata))
         else:
@@ -121,59 +111,43 @@ def init(use_dummy_data: bool) -> None:  #pylint: disable=too-many-statements,un
             for data in metadata_reader:
                 process_one_country(data)
 
-    with open('data/imf-dm-mapping.json', encoding='utf-8') as mapping_file:
-        mapping = json.load(mapping_file)
 
-    # build Countries map from Implied PPP conversion rates (National currency per international dollar)
-    #
-    # PPP_FILE
-    #
-    # Antigua and Barbuda,1.296,1.283,1.344,(snip),2.046,2.047,2.05
-    # Argentina,0,0,0,0,0,0,0,0,0.001,0.016,(snip), 41.198,56.231,70.931,84.788,97.39,108.15
-    #
-    with open(PPP_FILE, newline='', encoding="utf_8_sig") as imf_file:
-        imf_reader  = csv.DictReader(imf_file)
+def load_ppp_data(force_download: bool = False, use_dummy_data: bool = False) -> None:
+    ''' Loads PPP data from IMF API into Countries.
 
-        # 193 countries and regions in the file
-        for data in imf_reader:
-            title = 'Implied PPP conversion rate (National currency per international dollar)'
-            table_name: str | None = data.get(title)
-            if not table_name or not data.get('2020'):
-                continue
-            table_name = mapping.get(table_name, table_name)
-            #pdb.set_trace()
-            country_code: str | None = None
-            for code, metadata in Country_Metadata.items(): #type: str, CountryMetadataType
-                # print('code=' + code)
-                # print('metadata = ' + str(metadata))
-                if metadata['table_name'] == table_name:
-                    country_code = code
-            assert country_code, 'country code for ' + cast(str, table_name)
-            ppps = {}
-            for year in range(1980, 2100):
-                ppp = data.get(str(year))
-                if ppp is None or ppp == 'no data':
-                    continue
-                ppps[year] = float(ppp)
+       Args:
+          force_download:  Force to download with IMF API.
+          use_dummy_data:  True to use dummy data file.
+    '''
 
-            if country_code in ('TL', 'KP'): # Timor-Leste and North Korea are in asia.
+    global Country_Metadata, Countries, CountryCode_Names
+    logging.info('ppp_data.load_ppp_data()')
+
+    def parse_ppp_data(ppp_data: dict) -> None:
+
+        year_str_ppp: dict[str, float]    # {"1980": 2.44, "1981": 2.45...}
+        year_ppp: dict[int, float]        # 1980: 2.44, 1981: 2.45...}
+        country_code: str                 # ISO 2 letter code  'JP'
+        country_code3: str                # ISO 3166 Alpha 3 code 'JPN'
+
+        country_code_fix_map = { 'UVK': kosovo.alpha_2, # Kosovo
+                                 'WBG': 'PS' }   #  West Bank and Gaza, PSE
+        for country_code3, year_str_ppp in ppp_data['values']['PPPEX'].items():
+            country_code: str = country_code_fix_map.get(country_code3) or pycountry_convert.country_alpha3_to_country_alpha2(country_code3)
+            if country_code == 'SS':   # skip South Sudan since its PPP is too large to the graph
+                year_ppp = {}
+            else:
+                year_ppp = {int(year): value for year, value in year_str_ppp.items()}
+
+            # if country_code == 'WBG':   # Gaza -> Palestine
+            #     country_code = 'PSE'
+            if country_code in ('TL', 'KOR'): # Timor-Leste and North Korea are in Asia.  TL, KP
                 continent_code = 'AS'
             else:
                 continent_code = pycountry_convert.country_alpha2_to_continent_code(country_code)
-            # print(str(ppps))
 
-            # because ppp and dollar_per_luncho varies depending time, we fill them when API is called.
-
-            # Countries[country_code] = {
-            #     'year_ppp': ppps,
-            #     'country_code': country_code,
-            #     'currency_code': Country_Metadata[country_code]['currency_code'],
-            #     'continent_code': continent_code,
-            #     'currency_name': Country_Metadata[country_code]['currency_name'],
-            #     'country_name': Country_Metadata[country_code]['name']
-            # }
             Countries[country_code] = Country(
-                year_ppp = ppps,
+                year_ppp = year_ppp,
                 country_code = country_code,
                 currency_code = Country_Metadata[country_code]['currency_code'],
                 continent_code = continent_code,
@@ -182,32 +156,115 @@ def init(use_dummy_data: bool) -> None:  #pylint: disable=too-many-statements,un
             )
             CountryCode_Names[country_code] = Country_Metadata[country_code]['name']
 
-        # Countries['KP'] = Countries.get('KP') or {
-        #     'year_ppp': {},
-        #     'country_code': 'KP',
-        #     'currency_code': 'KPW',
-        #     'continent_code': 'AS',
-        #     'currency_name': "North Korean Won",
-        #     'country_name': "Korea, Democratic People's Republic of"
-        # }
+    # first, we try the saved PPP data in GCS or file if it has today's timestamp
+    ppp_data_saved: dict|None = download_ppp_data()
 
-        #print(str(Countries))
-        #print(CountryCode_Names)
+    if ppp_data_saved and not force_download:
+        timestamp: float = ppp_data_saved.get('timestamp', 0)
+        timestamp_date: datetime.date = datetime.datetime.utcfromtimestamp(timestamp).date()
+        if datetime.datetime.utcnow().date() == timestamp_date:  # today?
+            parse_ppp_data(ppp_data_saved)
+            logging.info(f"Loaded {len(ppp_data_saved['values']['PPPEX'])} PPP data from backup file")
+            return
 
-def update() -> None:
+    # not today's data. let's download PPP data with IMF API.
+    # a big thank you to all contributors to the data!
+    try:
+        with urllib.request.urlopen(conf.PPP_API) as return_data:
+            ppp_data_fetched = json.loads(return_data.read())
+            assert ppp_data_fetched
+
+            ppp_data_fetched['timestamp'] = time.time()
+            backup_ppp_data(ppp_data_fetched)             # save it with timestamp for the next time
+            parse_ppp_data(ppp_data_fetched)              # parse and store it
+            logging.info(f"Fetched {len(ppp_data_fetched['values']['PPPEX'])} PPP data from IMF")
+
+    except urllib.error.URLError as ex:
+        # network error! we use the last PPP data instead.
+        if ppp_data_saved:
+            logging.error('Failed to fetch PPP data from %s, falling down to the last data: %s ', conf.PPP_API, str(ex))
+            parse_ppp_data(ppp_data_saved)
+        else:
+            logging.error('Failed to fetch PPP data from %s, give up: %s ', conf.PPP_API, str(ex))
+
+
+def update_exchange_rate_in_Countries() -> None:
     ''' Update Countries to reflect the latest exchange rates. '''
 
     from src import exchange_rate  #pylint: disable=import-outside-toplevel
     year: int = datetime.datetime.today().year
-    logging.info('ppp_data.update()')
+    logging.info('ppp_data.update_exchange_rate_in_Countries()')
 
     with exchange_rate.global_variable_lock:
-        for _country_code, country in Countries.items():  #type: CountryCode, Country
+        for _country_code, country in Countries.items():
             country.ppp = country.year_ppp.get(year, 0.0) if country.year_ppp else None # country's ppp of this year
             country.exchange_rate = exchange_rate.exchange_rate_per_USD(country.currency_code)
             country.dollar_per_luncho = SDR_PER_LUNCHO / exchange_rate.SDR_Per_Dollar
             country.expiration = exchange_rate.expiration
+
             # country['ppp'] = country['year_ppp'].get(year, 0.0)  # country's ppp of this year
             # country['exchange_rate'] = exchange_rate.exchange_rate_per_USD(country['currency_code'])
             # country['dollar_per_luncho'] = SDR_PER_LUNCHO / exchange_rate.SDR_Per_Dollar
             # country['expiration'] = exchange_rate.expiration
+
+def backup_ppp_data(ppp_data: dict) -> None:
+    """ Backup PPP data to GCS or the file.
+
+    Args:
+       ppp_data: A dict that format is the same as PPP data got from IMF API.
+    """
+
+    if conf.GCS_BUCKET:
+        storage.Client().bucket(conf.GCS_BUCKET).blob(conf.PPP_FILE).upload_from_string(json.dumps(ppp_data))
+    else:
+        with open('data/' + conf.PPP_FILE, 'w', newline='', encoding="utf_8_sig") as ppp_data_file:
+            ppp_data_file.write(json.dumps(ppp_data))
+
+
+def download_ppp_data() -> dict | None:
+    """ Downloads PPP data from GCS or the file.
+
+    Returns: A dict that format is the same as PPP data got from IMF API.
+
+    """
+
+    if conf.GCS_BUCKET:
+        try:
+            return json.loads(storage.Client().bucket(conf.GCS_BUCKET).blob(conf.PPP_FILE).download_as_string())
+        except Exception as ex:
+            logging.error('Failed to download saved PPP file from GCS bucket %s: %s ', conf.GCS_BUCKET, str(ex))
+
+    try:
+        with open('data/' + conf.PPP_FILE, newline='', encoding="utf_8_sig") as ppp_data_file:
+            return json.load(ppp_data_file)
+    except Exception as ex:
+        logging.error('Failed to open saved PPP file from %s: %s ', 'data/' + conf.PPP_FILE, str(ex))
+
+    return None
+
+
+def cron_thread(use_dummy_data: bool=False):
+    ''' The cron thread. Update exchange rate data at 00:06 UTC everyday,
+       since exchangerate.host updates at 00:05. https://exchangerate.host/#/#docs"
+
+        In case on App Engine, cron.yaml is used and this is not used.
+    '''
+
+    while True:
+        time.sleep(time_to_update() - time.time())
+        #time.sleep(10)        # test
+        load_ppp_data(use_dummy_data)
+
+
+def time_to_update() -> float:
+    ''' Returns next update time in UTC time. We update at 00:04 everyday. '''
+
+    now: datetime.datetime = datetime.datetime.now()
+    tomorrow: datetime.datetime  = now + datetime.timedelta(days=1)
+    time_until_midnight: datetime.timedelta = datetime.datetime.combine(tomorrow, datetime.time.min) - now
+    seconds_until_midnight: int = time_until_midnight.seconds
+    result_time = time.time() + seconds_until_midnight + 4*60
+
+    return result_time
+
+load_metadata()

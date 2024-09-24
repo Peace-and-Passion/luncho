@@ -22,7 +22,7 @@ def setup_method() -> None:
     pass
 
 def test_server_api() -> None:
-    main.init(use_dummy_data=True)   # use dummy data from files
+    main.main(use_dummy_data=True)   # use dummy data from files
     client = TestClient(main.app)
 
     response = client.get("/v1/countries")
@@ -69,29 +69,29 @@ def test_forex_api_down() -> None:
 
     # do without exchange_rate.Exchange_Rates and LAST_FIXER_EXCHANGE_FILE
 
-    if os.path.exists(conf.LAST_FIXER_EXCHANGE_FILE):
-       os.remove(conf.LAST_FIXER_EXCHANGE_FILE)
+    if os.path.exists(conf.EXCHANGE_RATE_FILE):
+       os.remove(conf.EXCHANGE_RATE_FILE)
     exchange_rate.Exchange_Rates = {}
 
     conf.EXCHANGERATE_URLS = ['https://not_exist_not_exist.com']
     with pytest.raises(Exception):
-        main.init(use_dummy_data=False)
+        main.main(use_dummy_data=False)
 
     # do normally to make LAST_FIXER_EXCHANGE_FILE
     conf.EXCHANGERATE_URLS = conf.FREE_EXCHANGERATE_URLS
-    main.init(use_dummy_data=False)
-    assert os.path.exists(conf.LAST_FIXER_EXCHANGE_FILE)
+    main.main(use_dummy_data=False)
+    assert os.path.exists(conf.EXCHANGE_RATE_FILE)
 
     # do with LAST_FIXER_EXCHANGE_FILE and without exchange_rate.Exchange_Rates
     exchange_rate.Exchange_Rates = {}
     conf.EXCHANGERATE_URLS = ['https://not_exsist_not_exist.com']
-    main.init(use_dummy_data=False)
+    main.main(use_dummy_data=False)
 
     # do with LAST_FIXER_EXCHANGE_FILE and with exchange_rate.Exchange_Rates
     conf.EXCHANGERATE_URLS = ['https://not_exsist_not_exist.com']
-    main.init(use_dummy_data=False)
+    main.main(use_dummy_data=False)
 
     # test exchange rate API fallback
     exchange_rate.Exchange_Rates = {}
     conf.EXCHANGERATE_URLS = ['https://not_exsist_not_exist.com'] + conf.FREE_EXCHANGERATE_URLS
-    main.init(use_dummy_data=False)
+    main.main(use_dummy_data=False)

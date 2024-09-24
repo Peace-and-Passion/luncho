@@ -11,7 +11,7 @@ from fastapi import Header, APIRouter
 from fastapi_utils.openapi import simplify_operation_ids
 import typing_inspect
 
-from src import exchange_rate
+from src import exchange_rate, ppp_data
 from src.utils import error
 from src.ppp_data import Countries, CountryCode_Names
 from src.types import CountryCode, LunchoData, Country
@@ -39,6 +39,7 @@ async def luncho_data(
 
     return cast(LunchoData, country)
 
+
 @api_router.get("/country-code", response_model=str, tags=['Luncho'])
 async def country_code(
         X_Appengine_Country: Optional[str]=Header(None),  # country code if on Google App Engine
@@ -52,6 +53,7 @@ async def country_code(
     '''
     print('X_Appengine_Country = [' + str(X_Appengine_Country) + ']')
     return X_Appengine_Country or 'JP'
+
 
 @api_router.get("/countries", response_model=dict[CountryCode, str], tags=['Luncho'])
 async def countries() -> dict[CountryCode, str]:
@@ -85,11 +87,24 @@ async def health() -> None:
 
 
 @api_router.get("/update_exchange_rate", include_in_schema=False)  # not in OpenAPI
-async def update_exchange_rate() -> None:
-    '''
-      Update exchange rate data. This is an internal API.
-    '''
+async def update_exchange_rate() -> str:
+    '''  Update exchange rate data. This is an internal API.  '''
+
     exchange_rate.load_exchange_rates(False)
+
+    return "OK"
+
+
+@api_router.get("/update_ppp_data", include_in_schema=False)  # not in OpenAPI
+async def update_ppp_data() -> str:
+    '''  Update PPP data. This is an internal API.  '''
+
+    ppp_data.load_ppp_data(force_download=True)
+    ppp_data.update_exchange_rate_in_Countries()
+
+    return "OK"
+
+
 
 
 # use method names in OpenAPI operationIds to generate methods with the method names

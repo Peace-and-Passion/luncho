@@ -33,6 +33,12 @@
 
 ** Installation
 
+*** PRODUCTION Flag
+
+    You can set the PRODUCTION environment variable to "True" to exclude "localhost:8080" from the CORS setting.
+
+    If this flag is not set, the server still runs but CORS allows connection from "localhost:8080".
+
 *** API key for foreign exchange (forex) rate data
 
   - The Luncho server supports openexchangerates.org, exchangerate.host, and fixer.io. Edit

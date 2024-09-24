@@ -15,7 +15,6 @@ import logging
 import threading
 import urllib.request
 import urllib.error
-from threading import Thread
 from typing import TypedDict
 
 from google.cloud import storage
@@ -124,11 +123,11 @@ def load_exchange_rates(use_dummy_data: bool):
 
     # update PPP data
     from src import ppp_data
-    ppp_data.update()
+    ppp_data.update_exchange_rate_in_Countries()
 
 
-def cron(use_dummy_data):
-    '''Cron task thread. Update exchange rate data at 00:06 UTC everyday,
+def cron_thread(use_dummy_data):
+    ''' The cron thread. Update exchange rate data at 00:06 UTC everyday,
        since exchangerate.host updates at 00:05. https://exchangerate.host/#/#docs"
 
         In case on App Engine, cron.yaml is used and this is not used.
@@ -138,21 +137,6 @@ def cron(use_dummy_data):
         time.sleep(time_to_update() - time.time())
         #time.sleep(10)        # test
         load_exchange_rates(use_dummy_data)
-
-
-def init(use_dummy_data: bool) -> None:
-    ''' Initialize exchange rates. '''
-
-    # load exchange rates at startup and every one hour
-    load_exchange_rates(use_dummy_data)
-
-    if conf.IS_APPENGINE:
-        # we use cron.yaml on GAE
-        pass
-    else:
-        # start cron task
-        thread: Thread = Thread(target=cron, args=(use_dummy_data,))
-        thread.start()
 
 def time_to_update() -> float:
     ''' Returns next update time in POSIX time. '''
@@ -174,15 +158,7 @@ def time_to_update() -> float:
         result_time: float = time.time() + seconds_until_next_hour + 3*60
         return result_time
 
-    # exchangerate.host updates every day at 00:05 https://exchangerate.host/#/#docs"
     # we update at 00:06 everyday.
-    #
-    #  now = datetime.datetime(2021, 5, 21, 15, 22, 7, 226310)
-    #  tomorrow = datetime.datetime(2021, 5, 22, 15, 22, 7, 226310)
-    #  time_until_midnight = datetime.timedelta(seconds=31072, microseconds=773690)
-    #  seconds_until_midnight = 31072
-    #  time_to_update = 1621609503.573357 (2021-05-22 00:06:00)
-    #
     now = datetime.datetime.now()
     tomorrow: datetime.datetime  = now + datetime.timedelta(days=1)
     time_until_midnight: datetime.timedelta = datetime.datetime.combine(tomorrow, datetime.time.min) - now
@@ -207,12 +183,9 @@ def upload_exchange_rate(exchange_rate: FixerExchangeRate) -> None:
     """ Uploads exchange rate data to GCS."""
 
     if conf.GCS_BUCKET:
-        storage_client = storage.Client()
-        bucket = storage_client.bucket(conf.GCS_BUCKET)
-        blob = bucket.blob('last-exchange-late.json')
-        blob.upload_from_string(json.dumps(exchange_rate))
+        storage.Client().bucket(conf.GCS_BUCKET).blob(conf.EXCHANGE_RATE_FILE).upload_from_string(json.dumps(exchange_rate))
     else:
-        with open(conf.LAST_FIXER_EXCHANGE_FILE, 'w', newline='', encoding="utf_8_sig") as fixer_new_file:
+        with open('data/' + conf.EXCHANGE_RATE_FILE, 'w', newline='', encoding="utf_8_sig") as fixer_new_file:
             fixer_new_file.write(json.dumps(exchange_rate))
 
 def download_exchange_rate() -> FixerExchangeRate | None:
@@ -220,31 +193,14 @@ def download_exchange_rate() -> FixerExchangeRate | None:
 
     if conf.GCS_BUCKET:
         try:
-            storage_client = storage.Client()
-            bucket = storage_client.bucket(conf.GCS_BUCKET)
-            blob = bucket.blob('last-exchange-late.json')
+            blob = storage.Client().bucket(conf.GCS_BUCKET).blob(conf.EXCHANGE_RATE_FILE)
             return json.loads(blob.download_as_string())
         except Exception as ex:
             logging.error('Failed to download saved exchange rate from GCS bucker %s: %s ',
                           conf.GCS_BUCKET, str(ex))
             raise
     else:
-        with open(conf.LAST_FIXER_EXCHANGE_FILE, newline='', encoding="utf_8_sig") as fixer_last_file:
+        with open('data/' + conf.EXCHANGE_RATE_FILE, newline='', encoding="utf_8_sig") as fixer_last_file:
             return json.load(fixer_last_file)
 
     return None
-
-# def convert(source: Currency, currencyCode: CurrencyCode) -> Currency:
-#     if source.currencyCode == currencyCode:
-#         return source
-
-#     source_exchange_rate: float | None = Exchange_Rates.get(source.currencyCode, None)
-#     if source_exchange_rate is None or source_exchange_rate == 0:
-#         error(source.currencyCode, "Currency code mismatch")
-
-#     to_exchange_rate: float | None = Exchange_Rates.get(currencyCode, None)
-#     if to_exchange_rate is None:
-#         error(currencyCode, "Currency code mismatch")
-
-#     value: float = source.value / source_exchange_rate * to_exchange_rate
-#     return Currency(code=currencyCode, value=int(value))

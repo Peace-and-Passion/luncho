@@ -3,6 +3,8 @@
 #
 
 env_variables:
+  PRODUCTION:      true
+
   # If you use Google Cloud Storage for exchange rate backup, set a bucket name
   # Usually it is the same as the URL of GAE app. If you don't use, don't set it.
   GCS_BUCKET:      demandic-production.appspot.com

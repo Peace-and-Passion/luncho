@@ -13,6 +13,7 @@ import os
 import sys
 import json
 import logging
+from threading import Thread
 from typing import List, Dict, Optional
 
 from fastapi import FastAPI
@@ -48,29 +49,45 @@ app = FastAPI(
 )
 
 # CORS
+allow_origins: list[str] = [
+    "luncho-de-peace.org"
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "*", # "http://localhost:8082",
-    ],
+    allow_origins=allow_origins + ([ "http://localhost:8080", "https://localhost:8080"  ] if not conf.PRODUCTION else []),
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET"],
     allow_headers=["*"],
 )
 
 # static files in static dir
 #app.mount("/static", StaticFiles(directory="static"), name="static")
 
-def init(use_dummy_data=False):
+def main(use_dummy_data=False):
     ''' Called from post_worker_init() in gunicorn_config.py '''
+
+    if not os.getcwd().endswith('server') and not conf.IS_APPENGINE:
+        os.chdir("server")
 
     # initialize routes
     app.include_router(api.api_router, prefix=conf.API_V1_STR)
 
-    # load exchange rates at startup and every one hour
-    logging.info('main.init()')
-    ppp_data.init(use_dummy_data=use_dummy_data)
-    exchange_rate.init(use_dummy_data)
+    # initialize PPP data and exchange rates
+    logging.info('main.main()')
+    ppp_data.load_ppp_data()
+    exchange_rate.load_exchange_rates(use_dummy_data)
+
+    if conf.IS_APPENGINE:
+        # we use cron.yaml on GAE
+        pass
+    else:
+        # start the cron threads
+        exchange_rate_thread: Thread = Thread(target=exchange_rate.cron_thread, args=(use_dummy_data,))
+        exchange_rate_thread.start()
+
+        ppp_data_thread: Thread = Thread(target=ppp_data.cron_thread, args=(use_dummy_data,))
+        ppp_data_thread.start()
 
 def gen_openapi_schema() -> dict:
     ''' Callback for generating OpenAPI schema. '''
@@ -97,7 +114,7 @@ def gen_openapi_schema() -> dict:
 if __name__ == "__main__":
     # command line
     if len(sys.argv) == 2 and sys.argv[1] == '--dummy':
-        init(use_dummy_data=True)
+        main(use_dummy_data=True)
     elif len(sys.argv) == 2 and sys.argv[1] == 'gen':
         # gen client library using openAPI generator if schema file is old.
 
