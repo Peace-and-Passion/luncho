@@ -26,7 +26,7 @@ import pycountry_convert
 from google.cloud import storage
 
 import conf
-from conf import SDR_PER_LUNCHO
+from conf import Dollar_PER_LUNCHO
 from src.types import CurrencyCode, CountryCode, Country
 
 PPP_FILE  = 'data/imf-dm-export-20221225.csv'
@@ -199,13 +199,8 @@ def update_exchange_rate_in_Countries() -> None:
         for _country_code, country in Countries.items():
             country.ppp = country.year_ppp.get(year, 0.0) if country.year_ppp else None # country's ppp of this year
             country.exchange_rate = exchange_rate.exchange_rate_per_USD(country.currency_code)
-            country.dollar_per_luncho = SDR_PER_LUNCHO / exchange_rate.SDR_Per_Dollar
+            country.dollar_per_luncho = conf.Dollar_PER_LUNCHO
             country.expiration = exchange_rate.expiration
-
-            # country['ppp'] = country['year_ppp'].get(year, 0.0)  # country's ppp of this year
-            # country['exchange_rate'] = exchange_rate.exchange_rate_per_USD(country['currency_code'])
-            # country['dollar_per_luncho'] = SDR_PER_LUNCHO / exchange_rate.SDR_Per_Dollar
-            # country['expiration'] = exchange_rate.expiration
 
 def backup_ppp_data(ppp_data: dict) -> None:
     """ Backup PPP data to GCS or the file.

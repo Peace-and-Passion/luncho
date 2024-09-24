@@ -33,9 +33,6 @@ expiration: float = 0.0
 # time of the last load of Exchange_Rates
 last_load: float = 0
 
-# SDR/Dollar
-SDR_Per_Dollar: float = 0   # filled in load_exchange_rates()  1 SDR = $1.4...
-
 class FixerExchangeRate(TypedDict):
     ''' Exchange rate struct returned by Fixer API. '''
 
@@ -59,7 +56,7 @@ def load_exchange_rates(use_dummy_data: bool):
         pytest test/test_server.py::test_server_api_error
     '''
 
-    global Exchange_Rates, SDR_Per_Dollar, last_load, expiration
+    global Exchange_Rates, last_load, expiration
     fixer_exchange_rate: FixerExchangeRate = {}
     success: bool = False
     err_msg: str = ''
@@ -116,7 +113,6 @@ def load_exchange_rates(use_dummy_data: bool):
     # update globals
     with global_variable_lock:
         Exchange_Rates = fixer_exchange_rate.get('rates')
-        SDR_Per_Dollar = Exchange_Rates['XDR']
         last_load = time.time()
         expiration = time_to_update() + 40  # expires 40 sec after Forex data update time
 
@@ -164,18 +160,6 @@ def time_to_update() -> float:
     seconds_until_midnight: int = time_until_midnight.seconds
     result_time = time.time() + seconds_until_midnight + 6*60
     return result_time
-
-def exchange_rates_benchmark(_use_dummy_data: bool) -> None:
-    ''' Calculate the average exchange rates during the following period for each currency.
-
-    - [[file:///Users/hirano/Downloads/stasapp.pdf][World Economic Outlook 2021, STATISTICAL APPENDIX]]
-      - Assumptions
-        - Real effective exchange rates for the advanced economies are assumed to remain constant at
-          their _average levels measured during January 18, 2021–February 15, 2021_. For 2021 and 2022
-          these assumptions imply average US dollar–special drawing right (SDR) conversion rates of
-          1.445 and 1.458,
-    '''
-
 
 
 def upload_exchange_rate(exchange_rate: FixerExchangeRate) -> None:

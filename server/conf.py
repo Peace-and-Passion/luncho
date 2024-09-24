@@ -25,7 +25,8 @@ def Header_To_Fetch(lang: str) -> dict:
 
 # Unconfigurable constants
 
-SDR_PER_LUNCHO: float     = 6.0/100.0      # 100 Luncho is 6 SDR.
+# Luncho: Caution! This will be changed to take inflation into account automatically.
+Dollar_PER_LUNCHO: float     = 17.0/100.0      # 100 Luncho is $17 USD.
 API_V1_STR: str = "/v1"
 
 #
