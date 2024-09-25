@@ -11,13 +11,13 @@ import os
 # Configurable constants
 PRODUCTION: bool          = os.environ.get('PRODUCTION', 'False') in ('True', 'true')
 GCS_BUCKET: str | None    = os.environ.get('GCS_BUCKET', None)
-FOREX_API_KEY: str | None = os.environ.get('FOREX_API_KEY', None)
+FOREX_API_KEY: str        = os.environ.get('FOREX_API_KEY', 'Set_your_API_key_to__FOREX_API_KEY__environment_variable.')
 FOREX_HOURLY_UPDATE       = False   # True to fetch forex date hourly, False for daily
 IS_APPENGINE              = os.environ.get('GAE_APPLICATION') is not None  # True if running on Google App Engine
 
-EXCHANGERATE_URLS         = [ 'https://openexchangerates.org/api/latest.json?app_id=' ]
-#EXCHANGERATE_URLS        = [ 'https://exchangerate.host/api/latest?access_key=' ]
-#EXCHANGERATE_URLS        = ['http://data.fixer.io/api/latest?access_key=']
+EXCHANGERATE_URL         = 'https://openexchangerates.org/api/latest.json?app_id='
+#EXCHANGERATE_URL        = 'https://exchangerate.host/api/latest?access_key='
+#EXCHANGERATE_URL        = 'http://data.fixer.io/api/latest?access_key='
 
 def Header_To_Fetch(lang: str) -> dict:
     return {"Accept-Language": "".join([lang, ";"]), "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36"}

@@ -11,17 +11,13 @@
 
 import csv
 import datetime
-import json
 import logging
-import os
 import re
 import time
-import urllib.request
-import urllib.error
 from typing import cast, Any, TypedDict
+
 import pycountry
 import pycountry_convert
-
 from google.cloud import storage
 
 import conf
@@ -110,12 +106,18 @@ def load_metadata() -> None:
                 process_one_country(data)
 
 def load_ppp_data(force_download: bool = False, use_dummy_data: bool = False) -> None:
-    def parse_ppp_data(ppp_data: dict, from_location: str) -> None:
+    def process_ppp_data(ppp_data: dict[str, Any]|None, from_location: str) -> bool:
 
         year_str_ppp: dict[str, float]    # {"1980": 2.44, "1981": 2.45...}
         year_ppp: dict[int, float]        # 1980: 2.44, 1981: 2.45...}
         country_code: str                 # ISO 2 letter code  'JP'
         country_code3: str                # ISO 3166 Alpha 3 code 'JPN'
+
+        if not ppp_data:
+            if Countries:
+                logging.info('Reusing existing PPP data in Countries.')
+                return
+            assert False, 'PPP rate data is not available. Abort.'
 
         country_code_fix_map = { 'UVK': kosovo.alpha_2, # Kosovo
                                  'WBG': 'PS' }   #  West Bank and Gaza, PSE
@@ -142,9 +144,11 @@ def load_ppp_data(force_download: bool = False, use_dummy_data: bool = False) ->
                 country_name = Country_Metadata[country_code]['name'],
             )
             CountryCode_Names[country_code] = Country_Metadata[country_code]['name']
-        logging.info(f"Loaded {len(Countries)} PPP data from {from_location}.")
 
-    data_loader.load_data(conf.PPP_API, conf.PPP_FILE, parse_ppp_data)
+        logging.info(f"Loaded {len(Countries)} PPP data from {from_location}.")
+        return True
+
+    data_loader.load_data(conf.PPP_API, conf.PPP_FILE, process_ppp_data)
 
 def update_exchange_rate_in_Countries() -> None:
     ''' Update Countries to reflect the latest exchange rates. '''

@@ -8,17 +8,13 @@
 
 from __future__ import annotations
 import datetime
-import http
 import json
 import time
 import logging
 import threading
-import urllib.request
-import urllib.error
-from typing import TypedDict
+from typing import TypedDict, Any, cast
 
-from google.cloud import storage
-
+from src import data_loader
 from src.types import CurrencyCode
 import conf
 
@@ -56,70 +52,46 @@ def load_exchange_rates(use_dummy_data: bool):
         pytest test/test_server.py::test_server_api_error
     '''
 
-    global Exchange_Rates, last_load, expiration
-    fixer_exchange_rate: FixerExchangeRate = {}
-    success: bool = False
-    err_msg: str = ''
+    def process_exchange_rate(data: dict[str, Any]|None, from_location: str) -> bool:
+        global Exchange_Rates, last_load, expiration
+        fixer_exchange_rate: FixerExchangeRate = cast(FixerExchangeRate, dict)
+
+        if not data:
+            if Exchange_Rates:
+                logging.info('Reusing existing exchage rates.')
+                return True
+            assert False, 'Exchange rate data is not available. Abort.'
+
+        # 160 is for an incident occured in 2023 that lacks many currencies
+        if not fixer_exchange_rate.get('rates') or len(fixer_exchange_rate.get('rates')) < 160:
+            logging.info(f"Too few exchange rates ({len(fixer_exchange_rate.get('rates'))}) fetched.")
+            return False
+
+        # if base is not USD, convert rates into USD. fixer returns in EUR
+        if fixer_exchange_rate.get('base') != 'USD':
+            new_exchange_rates: dict[CurrencyCode, float] = {}
+            usd: float = fixer_exchange_rate['rates']['USD']  # USD per euro
+            for currecy_code, euro_value in fixer_exchange_rate['rates'].items():
+                new_exchange_rates[currecy_code] = euro_value / usd   # store in USD
+            fixer_exchange_rate['rates'] = new_exchange_rates
+
+        with global_variable_lock:
+            Exchange_Rates = fixer_exchange_rate.get('rates')
+            last_load = time.time()
+            expiration = time_to_update() + 40  # expires 40 sec after Forex data update time
+
+        logging.info(f"Loaded {len(Exchange_Rates)} exchange rate data from {from_location}.")
+        return True
 
     if use_dummy_data:
         with open(conf.DUMMY_FIXER_EXCHANGE_FILE, 'r', newline='', encoding="utf_8_sig") as fixer_file:
             fixer_exchange_rate = json.load(fixer_file) # 168 currencies
+        process_exchange_rate(fixer_exchange_rate, 'dummy file')
     else:
-        # try API URLs that are Fixer compatible
-        for api_url in conf.EXCHANGERATE_URLS:
-            url = api_url + (conf.FOREX_API_KEY or '')
-            request =  urllib.request.Request(url, headers=conf.Header_To_Fetch('en'))
+        data_loader.load_data(conf.EXCHANGERATE_URL + conf.FOREX_API_KEY, conf.EXCHANGE_RATE_FILE, process_exchange_rate)
 
-            try:
-                with urllib.request.urlopen(request) as return_data:
-                    fixer_exchange_rate = json.loads(return_data.read())
-
-                    # 160 is for an incident occured in 2023 that lacks many currencies
-                    if fixer_exchange_rate.get('rates') and len(fixer_exchange_rate.get('rates')) > 160:
-                        logging.info(f"Fetched {len(fixer_exchange_rate.get('rates'))} exchange rates from {api_url}")
-
-                    # if base is not USD, convert rates into USD. fixer returns in EUR
-                    if fixer_exchange_rate.get('base') != 'USD':
-                        new_exchange_rates: dict[CurrencyCode, float] = {}
-                        usd: float = fixer_exchange_rate['rates']['USD']  # USD per euro
-                        for currecy_code, euro_value in fixer_exchange_rate['rates'].items():
-                            new_exchange_rates[currecy_code] = euro_value / usd   # store in USD
-                        fixer_exchange_rate['rates'] = new_exchange_rates
-
-                    # save it for emergency
-                    upload_exchange_rate(fixer_exchange_rate)
-                    success = True
-                    break
-
-            except urllib.error.URLError as ex:
-                err_msg = str(ex)
-
-        if not success:
-            logging.warn('Failed to fetch exchange rates from %s, falling down to the last data: %s ', conf.EXCHANGERATE_URLS, err_msg)
-
-            # reuse existing data if there is
-            if Exchange_Rates:
-                logging.info('Reuse existing exchage rates')
-                return
-
-            # download saved data
-            rates: FixerExchangeRate | None = download_exchange_rate()
-            if rates:
-                fixer_exchange_rate = rates
-                logging.info('Use saved exchage rates')
-            else:
-                raise Exception('Failed to fetch exchange rates either from API and save data') #pylint: disable=broad-exception-raised
-
-    # update globals
-    with global_variable_lock:
-        Exchange_Rates = fixer_exchange_rate.get('rates')
-        last_load = time.time()
-        expiration = time_to_update() + 40  # expires 40 sec after Forex data update time
-
-    # update PPP data
     from src import ppp_data
     ppp_data.update_exchange_rate_in_Countries()
-
 
 def cron_thread(use_dummy_data):
     ''' The cron thread. Update exchange rate data at 00:06 UTC everyday,
@@ -160,31 +132,3 @@ def time_to_update() -> float:
     seconds_until_midnight: int = time_until_midnight.seconds
     result_time = time.time() + seconds_until_midnight + 6*60
     return result_time
-
-
-def upload_exchange_rate(exchange_rate: FixerExchangeRate) -> None:
-    """ Uploads exchange rate data to GCS."""
-
-    if conf.GCS_BUCKET:
-        storage.Client().bucket(conf.GCS_BUCKET).blob(conf.EXCHANGE_RATE_FILE).upload_from_string(json.dumps(exchange_rate))
-    else:
-        with open('data/' + conf.EXCHANGE_RATE_FILE, 'w', newline='', encoding="utf_8_sig") as fixer_new_file:
-            fixer_new_file.write(json.dumps(exchange_rate))
-
-def download_exchange_rate() -> FixerExchangeRate | None:
-    """ Downloads exchange rate data from GCS."""
-
-    if conf.GCS_BUCKET:
-        try:
-            blob = storage.Client().bucket(conf.GCS_BUCKET).blob(conf.EXCHANGE_RATE_FILE)
-            return json.loads(blob.download_as_string())
-        except Exception as ex:
-            logging.warn('Failed to download saved exchange rate from GCS bucker %s: %s ', conf.GCS_BUCKET, str(ex))
-
-    try:
-        with open('data/' + conf.EXCHANGE_RATE_FILE, newline='', encoding="utf_8_sig") as fixer_last_file:
-            return json.load(fixer_last_file)
-    except Exception as ex:
-        logging.error('Failed to open exchange rate backup file from %s: %s ', 'data/' + conf.EXCHANGE_RATE_FILE, str(ex))
-
-    return None
