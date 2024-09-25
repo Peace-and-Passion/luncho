@@ -11,7 +11,6 @@ env_variables:
 
   # set you API key for exchange rates
   # FOREX_API_KEY:   XXXXXXXX
-  FOREX_API_KEY: 9f688c4d534b40bf8dddef701101c8fe
 
 runtime: python311
 entrypoint: gunicorn -b :$PORT --access-logfile - --error-logfile - -k uvicorn.workers.UvicornH11Worker -c gunicorn_config.py main:app
