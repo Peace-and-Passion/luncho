@@ -11,17 +11,15 @@ env_variables:
 
   # set you API key for exchange rates
   # FOREX_API_KEY:   XXXXXXXX
-  FOREX_API_KEY: 9f688c4d534b40bf8dddef701101c8fe
 
 runtime: python311
 entrypoint: gunicorn -b :$PORT --access-logfile - --error-logfile - -k uvicorn.workers.UvicornH11Worker -c gunicorn_config.py main:app
-instance_class: F1
-default_expiration: "100s"
-#default_expiration: "4d 5h"
 
+instance_class: F1
 automatic_scaling:
-  min_instances: 0
+  min_instances: 1
   max_instances: 1
+#default_expiration: "100s"
 
 handlers:
 # Luncho API

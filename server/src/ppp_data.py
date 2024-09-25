@@ -106,7 +106,7 @@ def load_metadata() -> None:
                 process_one_country(data)
 
 def load_ppp_data(force_download: bool = False, use_dummy_data: bool = False) -> None:
-    def process_ppp_data(ppp_data: dict[str, Any]|None, from_location: str) -> bool:
+    def process_ppp_data(ppp_data: dict[str, Any]|None, source: str) -> bool:
 
         year_str_ppp: dict[str, float]    # {"1980": 2.44, "1981": 2.45...}
         year_ppp: dict[int, float]        # 1980: 2.44, 1981: 2.45...}
@@ -145,7 +145,7 @@ def load_ppp_data(force_download: bool = False, use_dummy_data: bool = False) ->
             )
             CountryCode_Names[country_code] = Country_Metadata[country_code]['name']
 
-        logging.info(f"Loaded {len(Countries)} PPP data from {from_location}.")
+        logging.info(f"Loaded {len(Countries)} PPP data from {source}.")
         return True
 
     data_loader.load_data(conf.PPP_API, conf.PPP_FILE, process_ppp_data)

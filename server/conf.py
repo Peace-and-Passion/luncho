@@ -9,7 +9,7 @@ from __future__ import annotations
 import os
 
 # Configurable constants
-PRODUCTION: bool          = os.environ.get('PRODUCTION', 'False') in ('True', 'true')
+PRODUCTION: bool          = os.environ.get('PRODUCTION', 'False') in ('True', 'true')  # NOT USED
 GCS_BUCKET: str | None    = os.environ.get('GCS_BUCKET', None)
 FOREX_API_KEY: str        = os.environ.get('FOREX_API_KEY', 'Set_your_API_key_to__FOREX_API_KEY__environment_variable.')
 FOREX_HOURLY_UPDATE       = False   # True to fetch forex date hourly, False for daily

@@ -52,9 +52,9 @@ def load_exchange_rates(use_dummy_data: bool):
         pytest test/test_server.py::test_server_api_error
     '''
 
-    def process_exchange_rate(data: dict[str, Any]|None, from_location: str) -> bool:
+    def process_exchange_rate(data: dict[str, Any]|None, source: str) -> bool:
         global Exchange_Rates, last_load, expiration
-        fixer_exchange_rate: FixerExchangeRate = cast(FixerExchangeRate, dict)
+        fixer_exchange_rate: FixerExchangeRate = cast(FixerExchangeRate, data)
 
         if not data:
             if Exchange_Rates:
@@ -77,10 +77,11 @@ def load_exchange_rates(use_dummy_data: bool):
 
         with global_variable_lock:
             Exchange_Rates = fixer_exchange_rate.get('rates')
-            last_load = time.time()
+            if source != 'backup' or not last_load:
+                last_load = time.time()
             expiration = time_to_update() + 40  # expires 40 sec after Forex data update time
 
-        logging.info(f"Loaded {len(Exchange_Rates)} exchange rate data from {from_location}.")
+        logging.info(f"Loaded {len(Exchange_Rates)} exchange rate data from {source}.")
         return True
 
     if use_dummy_data:

@@ -50,12 +50,12 @@ app = FastAPI(
 
 # CORS
 allow_origins: list[str] = [
-    "luncho-de-peace.org"
+    '*'    # serves API for any origin. # or origin such as "luncho-de-peace.org"
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allow_origins + ([ "http://localhost:8080", "https://localhost:8080"  ] if not conf.PRODUCTION else []),
+    allow_origins=allow_origins,
     allow_credentials=True,
     allow_methods=["GET"],
     allow_headers=["*"],
@@ -70,24 +70,21 @@ def main(use_dummy_data=False):
     if not os.getcwd().endswith('server') and not conf.IS_APPENGINE:
         os.chdir("server")
 
-    # initialize routes
-    app.include_router(api.api_router, prefix=conf.API_V1_STR)
-
     # initialize PPP data and exchange rates
     logging.info('main.main()')
     ppp_data.load_ppp_data()
     exchange_rate.load_exchange_rates(use_dummy_data)
 
-    if conf.IS_APPENGINE:
-        # we use cron.yaml on GAE
-        pass
-    else:
-        # start the cron threads
+    # start the cron threads. use cron.yaml on GAE
+    if not conf.IS_APPENGINE:
         exchange_rate_thread: Thread = Thread(target=exchange_rate.cron_thread, args=(use_dummy_data,))
         exchange_rate_thread.start()
 
         ppp_data_thread: Thread = Thread(target=ppp_data.cron_thread, args=(use_dummy_data,))
         ppp_data_thread.start()
+
+    # initialize routes and start serving API
+    app.include_router(api.api_router, prefix=conf.API_V1_STR)
 
 def gen_openapi_schema() -> dict:
     ''' Callback for generating OpenAPI schema. '''
