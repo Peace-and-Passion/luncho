@@ -88,7 +88,7 @@
         use the common unit of pricing that has the same value in every country.
       </p>
 
-      <p>Luncho is a common value index among currencies made for that. A luncho value shows the
+      <p>Luncho is a universal value index among currencies made for that. A luncho value shows the
         same value in every country taking its price levels into account. Because it doesn't depend on a
         specific currency, it's neutral and fair.
       </p>
@@ -179,39 +179,42 @@
     </section>
 
     <section>
-      <h4>How it works?</h4>
+      <h4>How does it work?</h4>
 
-      <p><b>100 Luncho is $17 USD</b>. This value changes according to inflation ratio.</p>
+      <p><b>In the base year of 2019 (pre-Corona), 100 Luncho was equivalent to $12.20 USD. The value of Luncho fluctuates daily in response to inflation rates. As of September 2024, 100 Luncho is valued at $14.95 USD.</b></p>
+
+      <pre>
+    In 2019:                           100 Luncho = $12.20
+    Inflation rate in 2020: 1.20%  →  100 Luncho = $12.35
+    Inflation rate in 2021: 4.70%  →  100 Luncho = $12.93
+    Inflation rate in 2022: 8.00%  →  100 Luncho = $13.96
+    Inflation rate in 2023: 4.10%  →  100 Luncho = $14.53
+    Inflation rate in 2024: 2.90%  →  100 Luncho = $14.95
+      </pre>
 
       <p>
-        A Luncho value in a country is calculated into the local currency of the country using <a target="_blank" href="https://www.imf.org/external/pubs/ft/weo/faq.htm#q4d">implied Purchase Power Parity (PPP)</a>, and exchange rates.</b>
+        Country Luncho values are calculated in local currencies using <a target="_blank" href="https://www.imf.org/external/pubs/ft/weo/faq.htm#q4d">implied Purchasing Power Parity (PPP)</a>. The inflation rate of each country is incorporated into the PPP, reflecting the relative price levels across countries.
+      </p>
 
-        <p>
-          Thus, Luncho reflects the overall price level of each country, <b>not actual lunch prices</b>. It is not for comparing lunch prices.
-        </p>
+      <p>
+        PPP represents a theoretical exchange rate that reflects the relative cost of goods and services between countries, compared to the US Dollar. We use PPP data from the <a target="_blank" href="https://www.imf.org/external/datamapper/PPPEX@WEO/OEMDC/ADVEC/WEOWORLD">IMF World Economic Outlook Database</a>, based on the <a target="_blank" href="https://www.worldbank.org/en/programs/icp">International Comparison Program (ICP)</a> led by the World Bank. The ICP tracks very wide range of price levels for thousands of goods like food, medical services, and more every five years. IMF data is updated annually using each country's deflator.
+      </p>
 
-        <p>
-          A PPP is a theoretical exchange rate that reflects the price level of a country against
-          US Dollar, that is, how expensive goods and services are in the country. Our PPP
-          data uses the latest data from <a target="_blank" href="https://www.imf.org/external/datamapper/PPPEX@WEO/OEMDC/ADVEC/WEOWORLD">IMF World Economic Outlook Database</a> and it is based on <a target="_blank" href="https://www.worldbank.org/en/programs/icp">the
-          latest International Comparison Program (ICP)</a> led by the World Bank. The ICP investigates price levels of <a target="_blank" href="https://openknowledge.worldbank.org/bitstream/handle/10986/33623/9781464815300.pdf">many
-          items such as bread, pork, cheese, sugar, gas, medical services, cars, etc.</a> in each
-          country every five years. The PPP data on IMF World Economic Outlook is adjusted every year using the defrator of each country.
-        </p>
+      <p>
+        Thus, Luncho reflects general price levels in a country actually, <b>not specific lunch prices</b>, and applicable to variety of applications.
+      </p>
 
-        <p style="margin-top: 4rem;">
-          local_currency_value = luncho_value * PPP * Dollar_per_Luncho
-        </p>
-
-        <p>You can see actual calculation <a target="_blank" href="https://github.com/Peace-and-Passion/luncho/blob/master/luncho_python/luncho_python/api/luncho.py#L41">here</a> in the client library and <a target="_blank" href="https://github.com/Peace-and-Passion/luncho/blob/master/server/src/ppp_data.py#L187">here</a> in the server code.</p>
-
+      <p style="margin-top: 4rem;">
+        local_currency_value = luncho_value * PPP * Dollar_per_Luncho
+      </p>
     </section>
-
     <section id="data">
       <h4><a target="_blank" href="https://github.com/Peace-and-Passion/luncho/tree/master/server/data">Data</a></h4>
 
       <ul class="browser-default">
         <li>Implied PPP conversion rate from <a target="_blank" href="https://www.imf.org/external/datamapper/PPPEX@WEO/OEMDC/ADVEC/WEOWORLD">IMF World Economic Outlook Database</a>, updated daily via <a href="https://www.imf.org/external/datamapper/api/help" target="_blank">the IMF API</a> with the "PPPEX" key.
+        </li>
+        <li>Inflation rate of average consumer prices from <a target="_blank" href="https://www.imf.org/external/datamapper/PCPIPCH@WEO/OEMDC/ADVEC/WEOWORLD">IMF World Economic Outlook Database</a>, updated daily via <a href="https://www.imf.org/external/datamapper/api/help" target="_blank">the IMF API</a> with the "PCPIPCH" key.
         </li>
 
         <!-- <li><a href="https://github.com/Peace-and-Passion/luncho/blob/master/server/data/imf-dm-fix.json">server/data/imf-dm-fix.json</a> includes lacking data for North Macedonia.</li> -->
@@ -243,21 +246,20 @@
       <h4>Limitations</h4>
 
       <ul class="browser-default">
-        <li>Due to the inflation, Dollar per Luncho can be obsolete in some countries. We need to update the Dollar per Luncho automatically.</li>
-        <li>PPP conversion rate is updated irregularly and does not reflect monthly inflation
-          data. Sorry for inconvenience.</li>
+        <li></li>
         <li>
-          Although you can expect to have simple lunch in restaurants for local residents with 100
-          Luncho, restaurants for tourists must be much more expensive.
+          While you can expect to have an affordable lunch for local residents with 100 Luncho, restaurants catering to tourists tend to be much more expensive.
         </li>
-        <li>There may be differences of price levels in a country. For example, it's cheap in rural areas while expensive in urban areas. The Luncho does not reflect such difference. You can see <a target="_blank" href="https://github.com/Peace-and-Passion/luncho/blob/master/server/data/Data_Extract_From_ICP_2017_Metadata.csv">one of our data files that we got from the ICP web site</a> to know how the PPP data was acquired in each country. Here are two examples from it. In Cambodia they investigated both urban and rural areas, while they did only urban areas in Colombia.
-          <ul>
-            <li>KHM,Kingdom of Cambodia,KHR: Riel,Cambodia,Urban and Rural</li>
-            <li>COL,Republic of Colombia,COP: Colombian Peso,Colombia,Urban only</li>
-          </ul>
+        <li>
+          Price levels may vary within a country, with cheaper options in rural areas and higher prices in urban areas.
+        </li>
+        <li>
+          Sometimes, the Luncho value may seem high compared to typical lunch prices, as seen in Japan, but it accurately reflects the price levels of a variety of goods and services.
         </li>
       </ul>
-      <p>Issues must be submitted on <a target="_blank" href="https://github.com/Peace-and-Passion/luncho/issues">the issues page on Github</a>. English correction is also welcome.</p>
+      <p>
+        Issues must be submitted on <a target="_blank" href="https://github.com/Peace-and-Passion/luncho/issues">the issues page on GitHub</a>. English corrections are also welcome.
+      </p>
     </section>
 
     <section>

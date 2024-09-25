@@ -45,7 +45,7 @@ def exchange_rate_per_USD(currencyCode: CurrencyCode) -> float: #pylint: disable
     return Exchange_Rates.get(currencyCode, 0.0)
 
 
-def load_exchange_rates(use_dummy_data: bool):
+def load_exchange_rates(use_dummy_data: bool, force_download: bool = False):
     ''' Load exchange rates from a forex API or saved rate data from GCS.
 
       Test:
@@ -89,7 +89,7 @@ def load_exchange_rates(use_dummy_data: bool):
             fixer_exchange_rate = json5.load(fixer_file) # 168 currencies
         process_exchange_rate(fixer_exchange_rate, 'dummy file')
     else:
-        data_loader.load_data(conf.EXCHANGERATE_URL + conf.FOREX_API_KEY, conf.EXCHANGE_RATE_FILE, process_exchange_rate)
+        data_loader.load_data(conf.EXCHANGERATE_URL + conf.FOREX_API_KEY, conf.EXCHANGE_RATE_FILE, process_exchange_rate, force_download=force_download)
 
     from src import ppp_data
     ppp_data.update_exchange_rate_in_Countries()

@@ -33,7 +33,9 @@ This_Year: int = datetime.datetime.today().year
 
 # definition of Luncho
 Dollar_Per_Luncho: float          = 0               # dollar per Luncho in this year
-Base_Dollar_Per_Luncho: float     = 13.0/100.0      # base dollar per Luncho in the base year
+# Base_Dollar_Per_Luncho: float     = 3.45/100.0      # base dollar per Luncho in the base year
+# Base_Dollar_Per_Luncho_Year: int  = 1980            # base year of dollar per Luncho
+Base_Dollar_Per_Luncho: float     = 12.2/100.0      # base dollar per Luncho in the base year
 Base_Dollar_Per_Luncho_Year: int  = 2019            # base year of dollar per Luncho
 
 #

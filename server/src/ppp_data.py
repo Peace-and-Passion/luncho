@@ -143,7 +143,7 @@ def load_ppp_data(force_download: bool = False, use_dummy_data: bool = False) ->
         logging.info(f"Loaded {len(Countries)} PPP data from {source}.")
         return True
 
-    data_loader.load_data(conf.PPP_API, conf.PPP_FILE, process_ppp_data)
+    data_loader.load_data(conf.PPP_API, conf.PPP_FILE, process_ppp_data, force_download=force_download)
 
 def update_exchange_rate_in_Countries() -> None:
     ''' Update Countries to reflect the latest exchange rates. '''

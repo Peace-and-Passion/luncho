@@ -15,7 +15,7 @@ import * as numeral from 'numeral';
 
 @autoinject
 export class App {
-    public title: string = 'Luncho de Peace: Common Value Index for the economic inequality issue';
+    public title: string = 'Luncho de Peace: Universal Value Index for the economic inequality problems';
     public router: Router;
     public static app: App;
     show = false;

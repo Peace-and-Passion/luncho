@@ -60,7 +60,7 @@ def load_inflation_ratio(force_download: bool = False, use_dummy_data: bool = Fa
         logging.info(f"Loaded {len(InflationRatio)} inflation ratio data from {source}.")
         return True
 
-    data_loader.load_data(conf.INFLATION_RATIO_API, conf.INFLATION_RATIO_FILE, process_inflation_ratio)
+    data_loader.load_data(conf.INFLATION_RATIO_API, conf.INFLATION_RATIO_FILE, process_inflation_ratio, force_download=force_download)
     update_dollar_per_luncho_in_Countries()
 
 def update_dollar_per_luncho_in_Countries() -> None:
@@ -81,16 +81,19 @@ def calc_dollar_per_luncho(target_year: int) -> float:
 
     dollar_per_luncho: float = conf.Base_Dollar_Per_Luncho
 
-    if target_year >= conf.Base_Dollar_Per_Luncho_Year:
-        for year in range(conf.Base_Dollar_Per_Luncho_Year, target_year + 1):
+    if target_year == conf.Base_Dollar_Per_Luncho_Year:
+        dollar_per_luncho = conf.Base_Dollar_Per_Luncho
+        logging.info(f'100 Luncho in {target_year} is {dollar_per_luncho * 100}.')
+    elif target_year >= conf.Base_Dollar_Per_Luncho_Year:
+        for year in range(conf.Base_Dollar_Per_Luncho_Year + 1, target_year + 1):
             ratio: float = InflationRatio['US'].get(year, 1.0) # 3.4%
             dollar_per_luncho *= 1.0 + ratio * 0.01           # 3.4 -> 103.4
-            logging.info(f'Inflation ratio in {year} is {ratio}. 100 Luncho is {dollar_per_luncho * 100}.')
+            logging.info(f'Inflation ratio in {year}: {ratio:.2f}, \t100 Luncho: ${dollar_per_luncho * 100:.2f}')
     else:
-        for year in range(conf.Base_Dollar_Per_Luncho_Year, target_year + 1):
+        for year in range(conf.Base_Dollar_Per_Luncho_Year + 1, target_year + 1):
             ratio: float = InflationRatio['US'].get(year, 1.0) # 3.4%
             dollar_per_luncho /= 1.0 + ratio * 0.01           # 3.4 -> 103.4
-            logging.info(f'Inflation ratio in {year} is {ratio}. 100 Luncho is {dollar_per_luncho * 100}.')
+            logging.info(f'Inflation ratio in {year}: {ratio:.2f}, \t100 Luncho: ${dollar_per_luncho * 100:.2f}')
 
     return dollar_per_luncho
 
