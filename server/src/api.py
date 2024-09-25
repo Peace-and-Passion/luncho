@@ -11,7 +11,7 @@ from fastapi import Header, APIRouter
 from fastapi_utils.openapi import simplify_operation_ids
 import typing_inspect
 
-from src import exchange_rate, ppp_data
+from src import exchange_rate, ppp_data, inflation_ratio
 from src.utils import error
 from src.ppp_data import Countries, CountryCode_Names
 from src.types import CountryCode, LunchoData, Country
@@ -99,6 +99,7 @@ async def update_exchange_rate() -> str:
 async def update_ppp_data() -> str:
     '''  Update PPP data. This is an internal API.  '''
 
+    inflation_ratio.load_inflation_ratio(force_download=True)
     ppp_data.load_ppp_data(force_download=True)
     ppp_data.update_exchange_rate_in_Countries()
 

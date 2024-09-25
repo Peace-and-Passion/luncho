@@ -168,8 +168,10 @@ def cron_thread(use_dummy_data: bool=False):
     while True:
         time.sleep(time_to_update() - time.time())
         #time.sleep(10)        # test
-        load_ppp_data(use_dummy_data)
 
+        from src import inflation_ratio
+        inflation_ratio.load_inflation_ratio(use_dummy_data)
+        load_ppp_data(use_dummy_data)
 
 def time_to_update() -> float:
     ''' Returns next update time in UTC time. We update at 00:04 everyday. '''
