@@ -86,7 +86,7 @@ def load_exchange_rates(use_dummy_data: bool):
 
     if use_dummy_data:
         with open(conf.DUMMY_FIXER_EXCHANGE_FILE, 'r', newline='', encoding="utf_8_sig") as fixer_file:
-            fixer_exchange_rate = json.load(fixer_file) # 168 currencies
+            fixer_exchange_rate = json5.load(fixer_file) # 168 currencies
         process_exchange_rate(fixer_exchange_rate, 'dummy file')
     else:
         data_loader.load_data(conf.EXCHANGERATE_URL + conf.FOREX_API_KEY, conf.EXCHANGE_RATE_FILE, process_exchange_rate)

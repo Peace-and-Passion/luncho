@@ -23,7 +23,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 #pylint: disable=wrong-import-position
 import conf
-from src import api, ppp_data, exchange_rate
+from src import api, ppp_data, exchange_rate, inflation_ratio
 
 root = logging.getLogger()
 root.setLevel(logging.INFO)
@@ -72,6 +72,7 @@ def main(use_dummy_data=False):
 
     # initialize PPP data and exchange rates
     logging.info('main.main()')
+    inflation_ratio.load_inflation_ratio(use_dummy_data)
     ppp_data.load_ppp_data()
     exchange_rate.load_exchange_rates(use_dummy_data)
 

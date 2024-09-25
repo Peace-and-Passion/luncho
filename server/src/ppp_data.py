@@ -21,7 +21,6 @@ import pycountry_convert
 from google.cloud import storage
 
 import conf
-from conf import Dollar_PER_LUNCHO
 from src import data_loader
 from src.types import CurrencyCode, CountryCode, Country
 
@@ -52,7 +51,6 @@ kosovo.alpha_3 = "KSV"
 kosovo.name = "Kosovo"
 kosovo.numeric = "383"
 kosovo.official_name = "Kosovo"
-
 
 def load_metadata() -> None:
     '''  Loads country metadata from data/Data_Extract_From_ICP_2017_Metadata.csv.
@@ -116,20 +114,16 @@ def load_ppp_data(force_download: bool = False, use_dummy_data: bool = False) ->
         if not ppp_data:
             if Countries:
                 logging.info('Reusing existing PPP data in Countries.')
-                return
+                return True
             assert False, 'PPP rate data is not available. Abort.'
 
-        country_code_fix_map = { 'UVK': kosovo.alpha_2, # Kosovo
-                                 'WBG': 'PS' }   #  West Bank and Gaza, PSE
         for country_code3, year_str_ppp in ppp_data['values']['PPPEX'].items():
-            country_code: str = country_code_fix_map.get(country_code3) or pycountry_convert.country_alpha3_to_country_alpha2(country_code3)
+            country_code: str = conf.IMF_Country_Code_Fix.get(country_code3) or pycountry_convert.country_alpha3_to_country_alpha2(country_code3)
             if country_code == 'SS':   # skip South Sudan since its PPP is too large to the graph
                 year_ppp = {}
             else:
                 year_ppp = {int(year): value for year, value in year_str_ppp.items()}
 
-            # if country_code == 'WBG':   # Gaza -> Palestine
-            #     country_code = 'PSE'
             if country_code in ('TL', 'KOR'): # Timor-Leste and North Korea are in Asia.  TL, KP
                 continent_code = 'AS'
             else:
@@ -142,6 +136,7 @@ def load_ppp_data(force_download: bool = False, use_dummy_data: bool = False) ->
                 continent_code = continent_code,
                 currency_name = Country_Metadata[country_code]['currency_name'],
                 country_name = Country_Metadata[country_code]['name'],
+                dollar_per_luncho = conf.Dollar_Per_Luncho,
             )
             CountryCode_Names[country_code] = Country_Metadata[country_code]['name']
 
@@ -154,14 +149,13 @@ def update_exchange_rate_in_Countries() -> None:
     ''' Update Countries to reflect the latest exchange rates. '''
 
     from src import exchange_rate  #pylint: disable=import-outside-toplevel
-    year: int = datetime.datetime.today().year
+    conf.This_Year = datetime.datetime.today().year
     logging.info('ppp_data.update_exchange_rate_in_Countries()')
 
     with exchange_rate.global_variable_lock:
         for _country_code, country in Countries.items():
-            country.ppp = country.year_ppp.get(year, 0.0) if country.year_ppp else None # country's ppp of this year
+            country.ppp = country.year_ppp.get(conf.This_Year, 0.0) if country.year_ppp else None # country's ppp of this year
             country.exchange_rate = exchange_rate.exchange_rate_per_USD(country.currency_code)
-            country.dollar_per_luncho = conf.Dollar_PER_LUNCHO
             country.expiration = exchange_rate.expiration
 
 def cron_thread(use_dummy_data: bool=False):

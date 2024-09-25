@@ -5,7 +5,8 @@
   @since 2021/05/12
 '''
 
-from __future__ import annotations
+import datetime
+import json5
 import os
 
 # Configurable constants
@@ -22,12 +23,18 @@ EXCHANGERATE_URL         = 'https://openexchangerates.org/api/latest.json?app_id
 def Header_To_Fetch(lang: str) -> dict:
     return {"Accept-Language": "".join([lang, ";"]), "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36"}
 
+IMF_Country_Code_Fix: dict[str, str]   # fix map for IMF country code
+with open('data/IMF_country_code_fix.json', newline='', encoding="utf_8_sig") as fix_file:
+    IMF_Country_Code_Fix = json5.load(fix_file)
+
 
 # Unconfigurable constants
+This_Year: int = datetime.datetime.today().year
 
-# Luncho: Caution! This will be changed to take inflation into account automatically.
-Dollar_PER_LUNCHO: float     = 17.0/100.0      # 100 Luncho is $17 USD.
-API_V1_STR: str = "/v1"
+# definition of Luncho
+Dollar_Per_Luncho: float          = 0               # dollar per Luncho in this year
+Base_Dollar_Per_Luncho: float     = 13.0/100.0      # base dollar per Luncho in the base year
+Base_Dollar_Per_Luncho_Year: int  = 2019            # base year of dollar per Luncho
 
 #
 # exchange rates
@@ -40,7 +47,14 @@ DUMMY_FIXER_EXCHANGE_FILE  = 'data/dummy-fixer-exchange-2020-11-11.json'
 #
 PPP_API   = 'https://www.imf.org/external/datamapper/api/v1/PPPEX'  # for all countries and all periods
 PPP_FILE  = 'ppp-data-backup.json'
+INFLATION_RATIO_API   = 'https://www.imf.org/external/datamapper/api/v1/PCPIPCH/USA' # inflation ratio of average in the period
+INFLATION_RATIO_FILE  = 'inflation-ratio-backup.json'
 ICP_FILE  = 'Data_Extract_From_ICP_2017_Metadata.csv'
+
+#
+# Luncho API
+#
+API_V1_STR: str = "/v1"
 
 # Luncho client library languages
 #  'language': 'option'

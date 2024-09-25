@@ -1,11 +1,18 @@
+'''
+  Luncho data loader
+
+  @author HIRANO Satoshi
+  @since  2024/09/25
+
+'''
 import datetime
-import json
 import logging
 import time
 import urllib.request
 import urllib.error
 from typing import Callable, Any
 
+import json5
 from google.cloud import storage
 
 import conf
@@ -42,7 +49,7 @@ def load_data(url: str, filename: str, processor: Callable[[dict[str, Any]|None,
     # a big thank you to all contributors to the data!
     try:
         with urllib.request.urlopen(url) as return_data:
-            data_fetched = json.loads(return_data.read())
+            data_fetched = json5.loads(return_data.read())
             assert data_fetched
 
             data_fetched['timestamp'] = time.time()
@@ -69,10 +76,10 @@ def store_backup_data(data: dict[str, Any], filename: str) -> None:
     """
 
     if conf.GCS_BUCKET:
-        storage.Client().bucket(conf.GCS_BUCKET).blob(filename).upload_from_string(json.dumps(data))
+        storage.Client().bucket(conf.GCS_BUCKET).blob(filename).upload_from_string(json5.dumps(data))
     else:
         with open('data/' + filename, 'w', newline='', encoding="utf_8_sig") as data_file:
-            data_file.write(json.dumps(data))
+            data_file.write(json5.dumps(data))
 
 
 def load_backup_data(filename: str) -> dict[str, Any] | None:
@@ -86,13 +93,13 @@ def load_backup_data(filename: str) -> dict[str, Any] | None:
 
     if conf.GCS_BUCKET:
         try:
-            return json.loads(storage.Client().bucket(conf.GCS_BUCKET).blob(filename).download_as_string())
+            return json5.loads(storage.Client().bucket(conf.GCS_BUCKET).blob(filename).download_as_string())
         except Exception as ex:
             logging.warn(f'Failed to download {filename} from GCS bucket {conf.GCS_BUCKET}: {str(ex)} ')
 
     try:
         with open('data/' + filename, newline='', encoding="utf_8_sig") as data_file:
-            return json.load(data_file)
+            return json5.load(data_file)
     except Exception as ex:
         logging.error(f'Failed to open saved data from data/{filename}: {str(ex)}')
 

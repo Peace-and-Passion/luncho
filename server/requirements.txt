@@ -10,6 +10,7 @@ google-cloud-storage
 gunicorn
 #../luncho_python  # don't include for GAE
 httpx
+json5
 mypy-extensions
 pycountry
 pycountry-convert

@@ -11,6 +11,7 @@ google-cloud-storage
 gunicorn
 ../luncho-python
 httpx
+json5
 mypy-extensions
 pycountry
 pycountry-convert
