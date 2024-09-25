@@ -1,0 +1,7 @@
+// 3 letter country code found in IMF data -> Known 2 letter code or ?? to ignore
+{
+    "MAE": "MK",   // Macedonia
+    "OAE": "??",   // Ignore
+    "UVK": "XK",   // Kosovo
+    "WBG": "PS"    // West bank and Gaza -> Palastine
+}
