@@ -9,7 +9,6 @@
 
 '''
 
-from __future__ import annotations
 import csv
 import datetime
 import json
@@ -27,10 +26,9 @@ from google.cloud import storage
 
 import conf
 from conf import Dollar_PER_LUNCHO
+from src import data_loader
 from src.types import CurrencyCode, CountryCode, Country
 
-PPP_FILE  = 'data/imf-dm-export-20221225.csv'
-ICP_FILE  = 'data/Data_Extract_From_ICP_2017_Metadata.csv'
 
 
 Countries: dict[CountryCode, Country] = {}      # A map of country data
@@ -104,26 +102,15 @@ def load_metadata() -> None:
             print("No location information on IP address: " + country_code3)
             #error(country_code3, "No location information on IP address")
 
-    for file in (ICP_FILE, 'data/Data_Extract_From_ICP_Fix.csv'):
+    for file in ('data/' + conf.ICP_FILE, 'data/Data_Extract_From_ICP_Fix.csv'):
         with open(file, newline='', encoding="utf_8_sig") as metadata_file:
             metadata_reader  = csv.DictReader(metadata_file)
 
             for data in metadata_reader:
                 process_one_country(data)
 
-
 def load_ppp_data(force_download: bool = False, use_dummy_data: bool = False) -> None:
-    ''' Loads PPP data from IMF API into Countries.
-
-       Args:
-          force_download:  Force to download with IMF API.
-          use_dummy_data:  True to use dummy data file.
-    '''
-
-    global Country_Metadata, Countries, CountryCode_Names
-    logging.info('ppp_data.load_ppp_data()')
-
-    def parse_ppp_data(ppp_data: dict) -> None:
+    def parse_ppp_data(ppp_data: dict, from_location: str) -> None:
 
         year_str_ppp: dict[str, float]    # {"1980": 2.44, "1981": 2.45...}
         year_ppp: dict[int, float]        # 1980: 2.44, 1981: 2.45...}
@@ -155,38 +142,9 @@ def load_ppp_data(force_download: bool = False, use_dummy_data: bool = False) ->
                 country_name = Country_Metadata[country_code]['name'],
             )
             CountryCode_Names[country_code] = Country_Metadata[country_code]['name']
+        logging.info(f"Loaded {len(Countries)} PPP data from {from_location}.")
 
-    # first, we try the saved PPP data in GCS or file if it has today's timestamp
-    ppp_data_saved: dict|None = download_ppp_data()
-
-    if ppp_data_saved and not force_download:
-        timestamp: float = ppp_data_saved.get('timestamp', 0)
-        timestamp_date: datetime.date = datetime.datetime.utcfromtimestamp(timestamp).date()
-        if datetime.datetime.utcnow().date() == timestamp_date:  # today?
-            parse_ppp_data(ppp_data_saved)
-            logging.info(f"Loaded {len(ppp_data_saved['values']['PPPEX'])} PPP data from backup file")
-            return
-
-    # not today's data. let's download PPP data with IMF API.
-    # a big thank you to all contributors to the data!
-    try:
-        with urllib.request.urlopen(conf.PPP_API) as return_data:
-            ppp_data_fetched = json.loads(return_data.read())
-            assert ppp_data_fetched
-
-            ppp_data_fetched['timestamp'] = time.time()
-            backup_ppp_data(ppp_data_fetched)             # save it with timestamp for the next time
-            parse_ppp_data(ppp_data_fetched)              # parse and store it
-            logging.info(f"Fetched {len(ppp_data_fetched['values']['PPPEX'])} PPP data from IMF")
-
-    except urllib.error.URLError as ex:
-        # network error! we use the last PPP data instead.
-        if ppp_data_saved:
-            logging.warn('Failed to fetch PPP data from %s, falling down to the last data: %s ', conf.PPP_API, str(ex))
-            parse_ppp_data(ppp_data_saved)
-        else:
-            logging.error('Failed to fetch PPP data from %s, give up: %s ', conf.PPP_API, str(ex))
-
+    data_loader.load_data(conf.PPP_API, conf.PPP_FILE, parse_ppp_data)
 
 def update_exchange_rate_in_Countries() -> None:
     ''' Update Countries to reflect the latest exchange rates. '''
@@ -201,42 +159,6 @@ def update_exchange_rate_in_Countries() -> None:
             country.exchange_rate = exchange_rate.exchange_rate_per_USD(country.currency_code)
             country.dollar_per_luncho = conf.Dollar_PER_LUNCHO
             country.expiration = exchange_rate.expiration
-
-def backup_ppp_data(ppp_data: dict) -> None:
-    """ Backup PPP data to GCS or the file.
-
-    Args:
-       ppp_data: A dict that format is the same as PPP data got from IMF API.
-    """
-
-    if conf.GCS_BUCKET:
-        storage.Client().bucket(conf.GCS_BUCKET).blob(conf.PPP_FILE).upload_from_string(json.dumps(ppp_data))
-    else:
-        with open('data/' + conf.PPP_FILE, 'w', newline='', encoding="utf_8_sig") as ppp_data_file:
-            ppp_data_file.write(json.dumps(ppp_data))
-
-
-def download_ppp_data() -> dict | None:
-    """ Downloads PPP data from GCS or the file.
-
-    Returns: A dict that format is the same as PPP data got from IMF API.
-
-    """
-
-    if conf.GCS_BUCKET:
-        try:
-            return json.loads(storage.Client().bucket(conf.GCS_BUCKET).blob(conf.PPP_FILE).download_as_string())
-        except Exception as ex:
-            logging.warn('Failed to download saved PPP file from GCS bucket %s: %s ', conf.GCS_BUCKET, str(ex))
-
-    try:
-        with open('data/' + conf.PPP_FILE, newline='', encoding="utf_8_sig") as ppp_data_file:
-            return json.load(ppp_data_file)
-    except Exception as ex:
-        logging.error('Failed to open saved PPP file from %s: %s ', 'data/' + conf.PPP_FILE, str(ex))
-
-    return None
-
 
 def cron_thread(use_dummy_data: bool=False):
     ''' The cron thread. Update exchange rate data at 00:06 UTC everyday,

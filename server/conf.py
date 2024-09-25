@@ -40,6 +40,7 @@ DUMMY_FIXER_EXCHANGE_FILE  = 'data/dummy-fixer-exchange-2020-11-11.json'
 #
 PPP_API   = 'https://www.imf.org/external/datamapper/api/v1/PPPEX'  # for all countries and all periods
 PPP_FILE  = 'ppp-data-backup.json'
+ICP_FILE  = 'Data_Extract_From_ICP_2017_Metadata.csv'
 
 # Luncho client library languages
 #  'language': 'option'
