@@ -138,8 +138,9 @@
 
 ** Author
 
-Dr HIRANO Satoshi, Peace and Passion, University of Tokyo (AIST)
+Dr HIRANO Satoshi, Peace and Passion, University of Tokyo, (AIST)
 
 ** [[../LICENSE][MIT License]]
 
 Copyright 2019-2022 The National Institute of Advanced Industrial Science and Technology (AIST), Japan
+Copyright 2024 Peace and Passion

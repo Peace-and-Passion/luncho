@@ -21,11 +21,17 @@
     yarn install
 
 *** Run on webpack devserver
+
   - "yarn start" does "yarn link luncho-typescript-fetch' automatically.
 
   yarn start
 
   open [[http://localhost:8080/]]
+
+  - If you got a SSL error on Chrome, you might need to delete HSTS redirection for
+    http://localhost.  Open 'chrome://net-internals/#hsts'. Input 'localhost' to Delete domain
+    security policy to delete. Don't forget to input 'http://localhost:8080' again in the address
+    bar, since it was redirected to 'https://localhost:8080'.
 
 ** Deployment
 
@@ -35,9 +41,9 @@
 
 ** Author
 
-Dr HIRANO Satoshi, Peace and Passion, University of Tokyo (AIST)
+Dr HIRANO Satoshi, Peace and Passion, University of Tokyo, (AIST)
 
 ** MIT License
 
-Copyright 2019-2021 The National Institute of Advanced Industrial Science and Technology (AIST), Japan
-Copyright 2022 Peace and Passion
+Copyright 2019-2022 The National Institute of Advanced Industrial Science and Technology (AIST), Japan
+Copyright 2024 Peace and Passion

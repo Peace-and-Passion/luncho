@@ -81,3 +81,12 @@ your user base and your revenue beyond the current ones without Luncho.
 ## Note
 
 Luncho de Peace is a derived work of AIST Luncho.
+
+## Author
+
+Dr HIRANO Satoshi, Peace and Passion, University of Tokyo, (AIST)
+
+## MIT License
+
+Copyright 2019-2022 The National Institute of Advanced Industrial Science and Technology (AIST), Japan
+Copyright 2024 Peace and Passion
