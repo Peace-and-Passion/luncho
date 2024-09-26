@@ -64,7 +64,7 @@ app.add_middleware(
 # static files in static dir
 #app.mount("/static", StaticFiles(directory="static"), name="static")
 
-def main(use_dummy_data=False):
+def main(use_test_data=False):
     ''' Called from post_worker_init() in gunicorn_config.py '''
 
     if not os.getcwd().endswith('server') and not conf.IS_APPENGINE:
@@ -72,16 +72,16 @@ def main(use_dummy_data=False):
 
     # initialize PPP data and exchange rates
     logging.info('main.main()')
-    inflation_ratio.load_inflation_ratio(use_dummy_data)
-    ppp_data.load_ppp_data()
-    exchange_rate.load_exchange_rates(use_dummy_data)
+    inflation_ratio.load_inflation_ratio(use_test_data=use_test_data)
+    ppp_data.load_ppp_data(use_test_data=use_test_data)
+    exchange_rate.load_exchange_rates(use_test_data=use_test_data)
 
     # start the cron threads. use cron.yaml on GAE
     if not conf.IS_APPENGINE:
-        exchange_rate_thread: Thread = Thread(target=exchange_rate.cron_thread, args=(use_dummy_data,))
+        exchange_rate_thread: Thread = Thread(target=exchange_rate.cron_thread, args=(use_test_data,))
         exchange_rate_thread.start()
 
-        ppp_data_thread: Thread = Thread(target=ppp_data.cron_thread, args=(use_dummy_data,))
+        ppp_data_thread: Thread = Thread(target=ppp_data.cron_thread, args=(use_test_data,))
         ppp_data_thread.start()
 
     # initialize routes and start serving API
@@ -112,7 +112,7 @@ def gen_openapi_schema() -> dict:
 if __name__ == "__main__":
     # command line
     if len(sys.argv) == 2 and sys.argv[1] == '--dummy':
-        main(use_dummy_data=True)
+        main(use_test_data=True)
     elif len(sys.argv) == 2 and sys.argv[1] == 'gen':
         # gen client library using openAPI generator if schema file is old.
 

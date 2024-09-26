@@ -11,7 +11,9 @@
 
 import csv
 import datetime
+import json5
 import logging
+import os
 import re
 import time
 from typing import cast, Any, TypedDict
@@ -30,8 +32,10 @@ from src.types import CurrencyCode, CountryCode, Country
 #InflationRatio: InflationRatioType = {}
 
 InflationRatio: dict[str, dict[int, float]] = {}
+last_load: float = 0              # time of the last load of InflationRatio
+data_source: str|None = None      # data source
 
-def load_inflation_ratio(force_download: bool = False, use_dummy_data: bool = False) -> None:
+def load_inflation_ratio(force_download: bool = False, use_test_data: bool = False) -> None:
     def process_inflation_ratio(data: dict[str, Any]|None, source: str) -> bool:
         '''
           Args:
@@ -41,6 +45,8 @@ def load_inflation_ratio(force_download: bool = False, use_dummy_data: bool = Fa
                        "1981":4.9000000000000003552713678800500929355621337890625,
         '''
 
+        global last_load, data_source
+
         year_str_infl: dict[str, float]   # {"1980": 2.44, "1981": 2.45...}
         year_infl: dict[int, float]       # 1980: 2.44, 1981: 2.45...}
         country_code: str                 # ISO 2 letter code  'JP'
@@ -48,6 +54,7 @@ def load_inflation_ratio(force_download: bool = False, use_dummy_data: bool = Fa
 
         if not data:
             if InflationRatio:
+                data_source = source
                 logging.info('Reusing existing inflation ratio in InflationRatio.')
                 return True
             assert False, 'Inflation ratio data is not available. Abort.'
@@ -57,10 +64,18 @@ def load_inflation_ratio(force_download: bool = False, use_dummy_data: bool = Fa
             if country_code != "??":
                 InflationRatio[country_code] = {int(year): value for year, value in year_str_infl.items()}
 
+        if source != 'backup' or not last_load:
+            last_load = time.time()
+        data_source = source
         logging.info(f"Loaded {len(InflationRatio)} inflation ratio data from {source}.")
         return True
 
-    data_loader.load_data(conf.INFLATION_RATIO_API, conf.INFLATION_RATIO_FILE, process_inflation_ratio, force_download=force_download)
+    if use_test_data:
+        with open(os.path.join(conf.Top_Dir, conf.INFLATION_RATIO_TEST_FILE), 'r', newline='', encoding="utf_8_sig") as dummy_file:
+            dummy_inflation_ratio = json5.load(dummy_file) # 168 currencies
+        process_inflation_ratio(dummy_inflation_ratio, 'dummy')
+    else:
+        data_loader.load_data(conf.INFLATION_RATIO_API, conf.INFLATION_RATIO_FILE, process_inflation_ratio, force_download=force_download)
     update_dollar_per_luncho_in_Countries()
 
 def update_dollar_per_luncho_in_Countries() -> None:
@@ -97,7 +112,7 @@ def calc_dollar_per_luncho(target_year: int) -> float:
 
     return dollar_per_luncho
 
-def cron_thread(use_dummy_data: bool=False):
+def cron_thread(use_test_data: bool=False):
     ''' The cron thread. Update exchange rate data at 00:06 UTC everyday,
        since exchangerate.host updates at 00:05. https://exchangerate.host/#/#docs"
 
@@ -108,7 +123,7 @@ def cron_thread(use_dummy_data: bool=False):
         time.sleep(time_to_update() - time.time())
         #time.sleep(10)        # test
 
-        load_inflation_ratio(use_dummy_data)
+        load_inflation_ratio(use_test_data)
 
 
 def time_to_update() -> float:

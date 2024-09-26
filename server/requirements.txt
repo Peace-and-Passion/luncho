@@ -1,9 +1,9 @@
-# requirements.txt for Python with mypy for development.
-#
+# requirements.txt for Python and GAE
 
 # packages
 aiofiles
 mypy
+email-validator
 fastapi
 fastapi-utils
 google-cloud-storage

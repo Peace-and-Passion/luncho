@@ -30,8 +30,8 @@ async def luncho_data(
 
       - **country_code**: client provided country code in ISO-3166-1-2 formant like 'JP'
       - **return**: LunchoData
-
     '''
+
     country: Country | None = Countries.get(country_code, None)
     if not country:
         error(country_code, 'Invalid country code')
@@ -49,8 +49,8 @@ async def country_code(
       Returns country code. This is available only when the server runs on Google App Engine.
       - **X_Appengine_Country**: Internal use. Ignore this.
       - **return**: str. A country code.
-
     '''
+
     print('X_Appengine_Country = [' + str(X_Appengine_Country) + ']')
     return X_Appengine_Country or 'JP'
 
@@ -65,6 +65,7 @@ async def countries() -> dict[CountryCode, str]:
 
       - **return**: dict[CountryCode, str] A dict of a country code and country name.
     '''
+
     return CountryCode_Names
 
 
@@ -83,6 +84,7 @@ async def health() -> None:
     '''
       Do nothing other than telling it's OK.
     '''
+
     return
 
 
@@ -90,7 +92,7 @@ async def health() -> None:
 async def update_exchange_rate() -> str:
     '''  Update exchange rate data. This is an internal API.  '''
 
-    exchange_rate.load_exchange_rates(False)
+    exchange_rate.load_exchange_rates(force_download=True)
 
     return "OK"
 

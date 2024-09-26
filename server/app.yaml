@@ -7,7 +7,7 @@ env_variables:
 
   # If you use Google Cloud Storage for exchange rate backup, set a bucket name
   # Usually it is the same as the URL of GAE app. If you don't use, don't set it.
-  GCS_BUCKET:      demandic-production.appspot.com
+  GCS_BUCKET:      XXX
 
   # set you API key for exchange rates
   # FOREX_API_KEY:   XXXXXXXX
@@ -19,7 +19,7 @@ instance_class: F1
 automatic_scaling:
   min_instances: 1
   max_instances: 1
-#default_expiration: "100s"
+default_expiration: "10d"
 
 handlers:
 # Luncho API
@@ -47,18 +47,29 @@ handlers:
   secure: always
   static_files: app-dist/index.html
   upload: app-dist/index.html
+  expiration: "1h"
 - url: /
   secure: always
   static_files: app-dist/index.html
   upload: app-dist/index.html
+  expiration: "1h"
 
 - url: /(.*\.(js|map|gif|png|jpg|ico|css))$
   secure: always
   static_files: app-dist/\1
   upload: app-dist/(.*\.(js|map|gif|png|jpg|ico|css))$
 
+# return 404 to attacks to WordPress
+- url: /.*\.(xml|php)(\?.*)?
+  static_files: non_existent_file
+  upload: non_existent_file
+
 # All other routes to the bundle for pushState
 - url: .*
   secure: always
   static_files: app-dist/index.html
   upload: app-dist/index.html
+
+error_handlers:
+  - error_code: over_quota
+    file: over_quota.html

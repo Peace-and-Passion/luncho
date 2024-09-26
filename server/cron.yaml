@@ -3,9 +3,9 @@
 #
 
 cron:
-- description: "Update PPP data at 00:04 UTC everyday
+- description: "Update PPP data at 00:04 UTC everyday"
   url: /v1/update_ppp_data
   schedule: every day 0:04
-- description: "Update exchange rate data at 00:06 UTC everyday
+- description: "Update exchange rate data at 00:06 UTC everyday"
   url: /v1/update_exchange_rate
   schedule: every day 0:06

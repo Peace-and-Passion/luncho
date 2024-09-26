@@ -4,7 +4,7 @@ import main
 
 def post_worker_init(worker):
     logging.info('gunicorn_config.py post_worker_init')
-    main.main(use_dummy_data=False)
+    main.main(use_test_data=False)
 
     # https://github.com/benoitc/gunicorn/issues/1299
     #resource.setrlimit(resource.RLIMIT_AS, (419400000, 419400000)) #byte 400Mi (soft, hard)

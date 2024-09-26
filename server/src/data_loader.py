@@ -7,6 +7,7 @@
 '''
 import datetime
 import logging
+import os
 import time
 import urllib.request
 import urllib.error
@@ -17,7 +18,7 @@ from google.cloud import storage
 
 import conf
 
-def load_data(url: str, filename: str, processor: Callable[[dict[str, Any]|None, str], bool], force_download: bool = False, use_dummy_data: bool = False, ) -> None:
+def load_data(url: str, filename: str, processor: Callable[[dict[str, Any]|None, str], bool], force_download: bool = False, use_test_data: bool = False, ) -> None:
     ''' Loads data from the backup file or using API.
 
         If we have today's backup file in GCS or in the data/ directory, we use it. If not, we load data using the API.
@@ -31,10 +32,10 @@ def load_data(url: str, filename: str, processor: Callable[[dict[str, Any]|None,
                            If data is not availabe, None is passed and source is 'fail'.
                            If the processor function returns False, this falls back to the next data source.
           force_download:  Force to download using the API.
-          use_dummy_data:  True to use dummy data file.
+          use_test_data:  True to use dummy data file.
     '''
     data_fetched: dict[str, Any]|None
-    data_backup: dict|None = load_backup_data(filename)
+    data_backup: dict|None = load_backup_data(filename)  # load even if force_download is True for fetch failure
 
     # first, we try the backup data if with today's timestamp
     if data_backup and not force_download:
@@ -78,7 +79,7 @@ def store_backup_data(data: dict[str, Any], filename: str) -> None:
     if conf.GCS_BUCKET:
         storage.Client().bucket(conf.GCS_BUCKET).blob(filename).upload_from_string(json5.dumps(data))
     else:
-        with open('data/' + filename, 'w', newline='', encoding="utf_8_sig") as data_file:
+        with open(os.path.join(conf.Top_Dir, filename), 'w', newline='', encoding="utf_8_sig") as data_file:
             data_file.write(json5.dumps(data))
 
 
@@ -98,7 +99,7 @@ def load_backup_data(filename: str) -> dict[str, Any] | None:
             logging.warn(f'Failed to download {filename} from GCS bucket {conf.GCS_BUCKET}: {str(ex)} ')
 
     try:
-        with open('data/' + filename, newline='', encoding="utf_8_sig") as data_file:
+        with open(os.path.join(conf.Top_Dir, filename), newline='', encoding="utf_8_sig") as data_file:
             return json5.load(data_file)
     except Exception as ex:
         logging.error(f'Failed to open saved data from data/{filename}: {str(ex)}')

@@ -108,7 +108,12 @@
     gcloud auth login
       (gcloud app create --project=luncho-hirano    or your project name)
     gcloud config set project luncho-hirano       (or your project name)
+
     gcloud app deploy --quiet
+
+  - Setup cron jobs. See this about Cloud Scheduler Admin role in https://cloud.google.com/appengine/docs/standard/scheduling-jobs-with-cron-yaml  .
+
+    gcloud app deploy cron.yaml
 
 *** Docker installation
 

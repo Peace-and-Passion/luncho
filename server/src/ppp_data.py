@@ -11,7 +11,9 @@
 
 import csv
 import datetime
+import json5
 import logging
+import os
 import re
 import time
 from typing import cast, Any, TypedDict
@@ -33,7 +35,7 @@ CountryCode_Names: dict[CountryCode, str] = {}  # A map of country code and name
 #   {'AFG': { 'Code': 'AFG', 'Long NameError(Islamic State of Afghanistan,AFN: Afghani,Afghanistan,
 #   {'ALB': {1980: 24.4, 1981: 24.5...
 class CountryMetadataType(TypedDict):
-    ''' Country metadata file type specified with ICP_FILE. '''
+    ''' Country metadata file type specified with ICP_METADATA_FILE. '''
 
     code: CountryCode         # AF  (ISO 2 letter country code)
     name: str                 # Afghanistan (common name in pycountry)
@@ -52,6 +54,9 @@ kosovo.name = "Kosovo"
 kosovo.numeric = "383"
 kosovo.official_name = "Kosovo"
 
+last_load: float = 0              # time of the last load of Countries
+data_source: str|None = None      # data source
+
 def load_metadata() -> None:
     '''  Loads country metadata from data/Data_Extract_From_ICP_2017_Metadata.csv.
     '''
@@ -59,7 +64,7 @@ def load_metadata() -> None:
     def process_one_country(data: Any) -> None:
         ''' Process a country metadata and put it in the Country_Metadata map.
 
-         ICP_FILE contains for countries and regions as following.
+         ICP_METADATA_FILE contains for countries and regions as following.
 
           ITA,Italian Republic,EUR: Euro,Italy,Capital-city only
           JAM,Jamaica,JMD: Jamaican Dollar,Jamaica,...
@@ -96,15 +101,17 @@ def load_metadata() -> None:
             print("No location information on IP address: " + country_code3)
             #error(country_code3, "No location information on IP address")
 
-    for file in ('data/' + conf.ICP_FILE, 'data/Data_Extract_From_ICP_Fix.csv'):
-        with open(file, newline='', encoding="utf_8_sig") as metadata_file:
+    for file in (conf.ICP_METADATA_FILE, conf.ICP_METADATA_FIX_FILE):
+        with open(os.path.join(conf.Top_Dir, file), newline='', encoding="utf_8_sig") as metadata_file:
             metadata_reader  = csv.DictReader(metadata_file)
 
             for data in metadata_reader:
                 process_one_country(data)
 
-def load_ppp_data(force_download: bool = False, use_dummy_data: bool = False) -> None:
+def load_ppp_data(force_download: bool = False, use_test_data: bool = False) -> None:
     def process_ppp_data(ppp_data: dict[str, Any]|None, source: str) -> bool:
+
+        global data_souce, last_load, data_source
 
         year_str_ppp: dict[str, float]    # {"1980": 2.44, "1981": 2.45...}
         year_ppp: dict[int, float]        # 1980: 2.44, 1981: 2.45...}
@@ -113,6 +120,7 @@ def load_ppp_data(force_download: bool = False, use_dummy_data: bool = False) ->
 
         if not ppp_data:
             if Countries:
+                data_source = source
                 logging.info('Reusing existing PPP data in Countries.')
                 return True
             assert False, 'PPP rate data is not available. Abort.'
@@ -140,10 +148,19 @@ def load_ppp_data(force_download: bool = False, use_dummy_data: bool = False) ->
             )
             CountryCode_Names[country_code] = Country_Metadata[country_code]['name']
 
+            if source != 'backup' or not last_load:
+                last_load = time.time()
+
+        data_source = source
         logging.info(f"Loaded {len(Countries)} PPP data from {source}.")
         return True
 
-    data_loader.load_data(conf.PPP_API, conf.PPP_FILE, process_ppp_data, force_download=force_download)
+    if use_test_data:
+        with open(os.path.join(conf.Top_Dir, conf.PPP_DATA_TEST_FILE), 'r', newline='', encoding="utf_8_sig") as dummy_file:
+            dummy_ppp_data = json5.load(dummy_file) # 168 currencies
+        process_ppp_data(dummy_ppp_data, 'test')
+    else:
+        data_loader.load_data(conf.PPP_DATA_URL, conf.PPP_DATA_FILE, process_ppp_data, force_download=force_download)
 
 def update_exchange_rate_in_Countries() -> None:
     ''' Update Countries to reflect the latest exchange rates. '''
@@ -158,7 +175,7 @@ def update_exchange_rate_in_Countries() -> None:
             country.exchange_rate = exchange_rate.exchange_rate_per_USD(country.currency_code)
             country.expiration = exchange_rate.expiration
 
-def cron_thread(use_dummy_data: bool=False):
+def cron_thread(use_test_data: bool=False):
     ''' The cron thread. Update exchange rate data at 00:06 UTC everyday,
        since exchangerate.host updates at 00:05. https://exchangerate.host/#/#docs"
 
@@ -170,8 +187,8 @@ def cron_thread(use_dummy_data: bool=False):
         #time.sleep(10)        # test
 
         from src import inflation_ratio
-        inflation_ratio.load_inflation_ratio(use_dummy_data)
-        load_ppp_data(use_dummy_data)
+        inflation_ratio.load_inflation_ratio(use_test_data)
+        load_ppp_data(use_test_data)
 
 def time_to_update() -> float:
     ''' Returns next update time in UTC time. We update at 00:04 everyday. '''
