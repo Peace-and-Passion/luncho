@@ -11,7 +11,7 @@
 
 import csv
 import datetime
-import json5
+import json
 import logging
 import os
 import re
@@ -102,7 +102,7 @@ def load_metadata() -> None:
             #error(country_code3, "No location information on IP address")
 
     for file in (conf.ICP_METADATA_FILE, conf.ICP_METADATA_FIX_FILE):
-        with open(os.path.join(conf.Top_Dir, file), newline='', encoding="utf_8_sig") as metadata_file:
+        with open(os.path.join(conf.Data_Dir, file), newline='', encoding="utf_8_sig") as metadata_file:
             metadata_reader  = csv.DictReader(metadata_file)
 
             for data in metadata_reader:
@@ -156,8 +156,8 @@ def load_ppp_data(force_download: bool = False, use_test_data: bool = False) -> 
         return True
 
     if use_test_data:
-        with open(os.path.join(conf.Top_Dir, conf.PPP_DATA_TEST_FILE), 'r', newline='', encoding="utf_8_sig") as dummy_file:
-            dummy_ppp_data = json5.load(dummy_file) # 168 currencies
+        with open(os.path.join(conf.Data_Dir, conf.PPP_DATA_TEST_FILE), 'r', newline='', encoding="utf_8_sig") as dummy_file:
+            dummy_ppp_data = json.load(dummy_file) # 168 currencies
         process_ppp_data(dummy_ppp_data, 'test')
     else:
         data_loader.load_data(conf.PPP_DATA_URL, conf.PPP_DATA_FILE, process_ppp_data, force_download=force_download)

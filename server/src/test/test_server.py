@@ -102,20 +102,20 @@ def test_load_data() -> None:
 
     # do without exchange_rate.Exchange_Rates and LAST_FIXER_EXCHANGE_FILE
 
-    if os.path.exists(os.path.join(conf.Top_Dir, conf.EXCHANGE_RATE_FILE)):
-       os.remove(os.path.join(conf.Top_Dir, conf.EXCHANGE_RATE_FILE))
+    if os.path.exists(os.path.join(conf.Data_Dir, conf.EXCHANGE_RATE_FILE)):
+       os.remove(os.path.join(conf.Data_Dir, conf.EXCHANGE_RATE_FILE))
     exchange_rate.Exchange_Rates = {}
 
     # 1) test fetch with API without backup file.
 
     exchange_rate.load_exchange_rates(use_test_data=False)
-    assert os.path.exists(os.path.join(conf.Top_Dir, conf.EXCHANGE_RATE_FILE))
+    assert os.path.exists(os.path.join(conf.Data_Dir, conf.EXCHANGE_RATE_FILE))
     assert exchange_rate.data_source == 'API'
 
     # 2) test load from backup file.
 
     exchange_rate.load_exchange_rates(use_test_data=False)
-    assert os.path.exists(os.path.join(conf.Top_Dir, conf.EXCHANGE_RATE_FILE))
+    assert os.path.exists(os.path.join(conf.Data_Dir, conf.EXCHANGE_RATE_FILE))
     assert exchange_rate.data_source == 'backup'
 
     # 3) test fetch with API failure, then load from the backup file.
@@ -124,14 +124,14 @@ def test_load_data() -> None:
     conf.EXCHANGE_RATE_URL = 'https://not_exist_not_exist.com'
     exchange_rate.load_exchange_rates(use_test_data=False)
     conf.EXCHANGE_RATE_URL = url
-    assert os.path.exists(os.path.join(conf.Top_Dir, conf.EXCHANGE_RATE_FILE))
+    assert os.path.exists(os.path.join(conf.Data_Dir, conf.EXCHANGE_RATE_FILE))
     assert exchange_rate.data_source == 'backup'
 
     # 4) test fetch with API failure and no backup file. Use existing Exchange_Rates.
 
     url = conf.EXCHANGE_RATE_URL
     conf.EXCHANGE_RATE_URL = 'https://not_exist_not_exist.com'
-    os.remove(os.path.join(conf.Top_Dir, conf.EXCHANGE_RATE_FILE))
+    os.remove(os.path.join(conf.Data_Dir, conf.EXCHANGE_RATE_FILE))
     exchange_rate.load_exchange_rates(use_test_data=False)
     conf.EXCHANGE_RATE_URL = url
     assert exchange_rate.data_source == 'fail'
@@ -173,8 +173,8 @@ def test_update_exchange_rate() -> None:
 
     # do without exchange_rate.Exchange_Rates and LAST_FIXER_EXCHANGE_FILE
 
-    if os.path.exists(os.path.join(conf.Top_Dir, conf.EXCHANGE_RATE_FILE)):
-       os.remove(os.path.join(conf.Top_Dir, conf.EXCHANGE_RATE_FILE))
+    if os.path.exists(os.path.join(conf.Data_Dir, conf.EXCHANGE_RATE_FILE)):
+       os.remove(os.path.join(conf.Data_Dir, conf.EXCHANGE_RATE_FILE))
     exchange_rate.Exchange_Rates = {}
 
     main.main(use_test_data=True)   # use dummy data from files
@@ -185,14 +185,14 @@ def test_update_exchange_rate() -> None:
     response = client.get("/v1/update_exchange_rate")
     assert response.status_code == 200
     assert exchange_rate.data_source == 'API'
-    assert os.path.exists(os.path.join(conf.Top_Dir, conf.EXCHANGE_RATE_FILE))
+    assert os.path.exists(os.path.join(conf.Data_Dir, conf.EXCHANGE_RATE_FILE))
 
     # 2) test fetch with API with backup file.
 
     response = client.get("/v1/update_exchange_rate")
     assert response.status_code == 200
     assert exchange_rate.data_source == 'API'
-    assert os.path.exists(os.path.join(conf.Top_Dir, conf.EXCHANGE_RATE_FILE))
+    assert os.path.exists(os.path.join(conf.Data_Dir, conf.EXCHANGE_RATE_FILE))
 
     # 3) test fetch with API failure, then load from the backup file.
 
@@ -201,14 +201,14 @@ def test_update_exchange_rate() -> None:
     response = client.get("/v1/update_exchange_rate")
     assert response.status_code == 200
     conf.EXCHANGE_RATE_URL = url
-    assert os.path.exists(os.path.join(conf.Top_Dir, conf.EXCHANGE_RATE_FILE))
+    assert os.path.exists(os.path.join(conf.Data_Dir, conf.EXCHANGE_RATE_FILE))
     assert exchange_rate.data_source == 'backup'
 
     # 4) test fetch with API failure and no backup file. Use existing Exchange_Rates.
 
     url = conf.EXCHANGE_RATE_URL
     conf.EXCHANGE_RATE_URL = 'https://not_exist_not_exist.com'
-    os.remove(os.path.join(conf.Top_Dir, conf.EXCHANGE_RATE_FILE))
+    os.remove(os.path.join(conf.Data_Dir, conf.EXCHANGE_RATE_FILE))
     response = client.get("/v1/update_exchange_rate")
     assert response.status_code == 200
     conf.EXCHANGE_RATE_URL = url
@@ -243,8 +243,8 @@ def test_update_ppp_data() -> None:
 
     # do without ppp_data.Ppp_Datas and LAST_FIXER_EXCHANGE_FILE
 
-    if os.path.exists(os.path.join(conf.Top_Dir, conf.PPP_DATA_FILE)):
-       os.remove(os.path.join(conf.Top_Dir, conf.PPP_DATA_FILE))
+    if os.path.exists(os.path.join(conf.Data_Dir, conf.PPP_DATA_FILE)):
+       os.remove(os.path.join(conf.Data_Dir, conf.PPP_DATA_FILE))
     ppp_data.Countries = {}
 
     main.main(use_test_data=True)   # use dummy data from files
@@ -255,14 +255,14 @@ def test_update_ppp_data() -> None:
     response = client.get("/v1/update_ppp_data")
     assert response.status_code == 200
     assert ppp_data.data_source == 'API'
-    assert os.path.exists(os.path.join(conf.Top_Dir, conf.PPP_DATA_FILE))
+    assert os.path.exists(os.path.join(conf.Data_Dir, conf.PPP_DATA_FILE))
 
     # 2) test fetch with API with backup file.
 
     response = client.get("/v1/update_ppp_data")
     assert response.status_code == 200
     assert ppp_data.data_source == 'API'
-    assert os.path.exists(os.path.join(conf.Top_Dir, conf.PPP_DATA_FILE))
+    assert os.path.exists(os.path.join(conf.Data_Dir, conf.PPP_DATA_FILE))
 
     # 3) test fetch with API failure, then load from the backup file.
 
@@ -271,14 +271,14 @@ def test_update_ppp_data() -> None:
     response = client.get("/v1/update_ppp_data")
     assert response.status_code == 200
     conf.PPP_DATA_URL = url
-    assert os.path.exists(os.path.join(conf.Top_Dir, conf.PPP_DATA_FILE))
+    assert os.path.exists(os.path.join(conf.Data_Dir, conf.PPP_DATA_FILE))
     assert ppp_data.data_source == 'backup'
 
     # 4) test fetch with API failure and no backup file. Use existing Countries.
 
     url = conf.PPP_DATA_URL
     conf.PPP_DATA_URL = 'https://not_exist_not_exist.com'
-    os.remove(os.path.join(conf.Top_Dir, conf.PPP_DATA_FILE))
+    os.remove(os.path.join(conf.Data_Dir, conf.PPP_DATA_FILE))
     response = client.get("/v1/update_ppp_data")
     assert response.status_code == 200
     conf.PPP_DATA_URL = url

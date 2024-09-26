@@ -11,7 +11,7 @@
 
 import csv
 import datetime
-import json5
+import json
 import logging
 import os
 import re
@@ -71,8 +71,8 @@ def load_inflation_ratio(force_download: bool = False, use_test_data: bool = Fal
         return True
 
     if use_test_data:
-        with open(os.path.join(conf.Top_Dir, conf.INFLATION_RATIO_TEST_FILE), 'r', newline='', encoding="utf_8_sig") as dummy_file:
-            dummy_inflation_ratio = json5.load(dummy_file) # 168 currencies
+        with open(os.path.join(conf.Data_Dir, conf.INFLATION_RATIO_TEST_FILE), 'r', newline='', encoding="utf_8_sig") as dummy_file:
+            dummy_inflation_ratio = json.load(dummy_file) # 168 currencies
         process_inflation_ratio(dummy_inflation_ratio, 'dummy')
     else:
         data_loader.load_data(conf.INFLATION_RATIO_API, conf.INFLATION_RATIO_FILE, process_inflation_ratio, force_download=force_download)

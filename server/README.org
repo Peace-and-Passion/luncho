@@ -109,7 +109,7 @@
       (gcloud app create --project=luncho-hirano    or your project name)
     gcloud config set project luncho-hirano       (or your project name)
 
-    gcloud app deploy --quiet
+    gcloud app deploy --quiet app.yaml
 
   - Setup cron jobs. See this about Cloud Scheduler Admin role in https://cloud.google.com/appengine/docs/standard/scheduling-jobs-with-cron-yaml  .
 

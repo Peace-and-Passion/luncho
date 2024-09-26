@@ -5,6 +5,7 @@
   @date  2021/05/13
 '''
 
+import logging
 from typing import Optional, cast
 
 from fastapi import Header, APIRouter
@@ -102,8 +103,13 @@ async def update_ppp_data() -> str:
     '''  Update PPP data. This is an internal API.  '''
 
     inflation_ratio.load_inflation_ratio(force_download=True)
+    logging.info('load_inflation_ratio finished.')
+
     ppp_data.load_ppp_data(force_download=True)
+    logging.info('load_ppp_data finished.')
+
     ppp_data.update_exchange_rate_in_Countries()
+    logging.info('update_exchange_rate_in_Countries finished.')
 
     return "OK"
 

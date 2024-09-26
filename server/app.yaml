@@ -5,15 +5,17 @@
 env_variables:
   PRODUCTION:      true
 
-  # If you use Google Cloud Storage for exchange rate backup, set a bucket name
-  # Usually it is the same as the URL of GAE app. If you don't use, don't set it.
-  GCS_BUCKET:      XXX
+  # If you use Google Cloud Storage for exchange rate backup, set a bucket name.
+  # Usually it is the same as the URL of GAE app.
+  # You need to set Cloud Scheduler Admin role. See https://cloud.google.com/appengine/docs/standard/scheduling-jobs-with-cron-yaml
+  # If you don't use, don't set it.
+  GCS_BUCKET:      XXXX
 
   # set you API key for exchange rates
-  # FOREX_API_KEY:   XXXXXXXX
+  FOREX_API_KEY:   XXXX
 
 runtime: python311
-entrypoint: gunicorn -b :$PORT --access-logfile - --error-logfile - -k uvicorn.workers.UvicornH11Worker -c gunicorn_config.py main:app
+entrypoint: gunicorn -b :$PORT --access-logfile - --error-logfile - -k uvicorn.workers.UvicornH11Worker -c gunicorn_config.py --timeout 60 main:app
 
 instance_class: F1
 automatic_scaling:

@@ -7,7 +7,7 @@
 '''
 
 import datetime
-import json5
+import json
 import os
 import time
 import logging
@@ -80,18 +80,18 @@ def load_exchange_rates(force_download: bool=False, use_test_data: bool=False):
             if source != 'backup' or not last_load:
                 last_load = time.time()
 
-            # expires 40 sec after Forex data update time
+            # expires 3 minute after Forex data update time
             # expiration must be updated even if we use backup data so that the client library
             # can use data.
-            expiration = time_to_update() + 40
+            expiration = time_to_update() + 3 * 60
 
         data_source = source
         logging.info(f"Loaded {len(Exchange_Rates)} exchange rate data from {source}.")
         return True
 
     if use_test_data:
-        with open(os.path.join(conf.Top_Dir, conf.EXCHANGE_RATE_TEST_FILE), 'r', newline='', encoding="utf_8_sig") as dummy_file:
-            dummy_exchange_rate = json5.load(dummy_file) # 168 currencies
+        with open(os.path.join(conf.Data_Dir, conf.EXCHANGE_RATE_TEST_FILE), 'r', newline='', encoding="utf_8_sig") as dummy_file:
+            dummy_exchange_rate = json.load(dummy_file) # 168 currencies
         process_exchange_rate(dummy_exchange_rate, 'test')
     else:
         data_loader.load_data(conf.EXCHANGE_RATE_URL + conf.FOREX_API_KEY, conf.EXCHANGE_RATE_FILE, process_exchange_rate, force_download=force_download)

@@ -24,8 +24,9 @@ def Header_To_Fetch(lang: str) -> dict:
     return {"Accept-Language": "".join([lang, ";"]), "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36"}
 
 Top_Dir = os.path.dirname(os.path.abspath(__file__))
+Data_Dir = os.path.join(Top_Dir, 'data')
 IMF_Country_Code_Fix: dict[str, str]   # fix map for IMF country code
-with open(os.path.join(Top_Dir, 'data/IMF_country_code_fix.json'), newline='', encoding="utf_8_sig") as fix_file:
+with open(os.path.join(Data_Dir, 'IMF_country_code_fix.json'), newline='', encoding="utf_8_sig") as fix_file:
     IMF_Country_Code_Fix = json5.load(fix_file)
 
 
@@ -42,21 +43,21 @@ Base_Dollar_Per_Luncho_Year: int  = 2019            # base year of dollar per Lu
 #
 # exchange rates
 #
-EXCHANGE_RATE_FILE         = 'data/backup-exchange-rate.json'
-EXCHANGE_RATE_TEST_FILE    = 'data/test-data-exchange-rate-2024-09-26.json'
-#EXCHANGE_RATE_TEST_FILE   = 'data/test-data-fixer-exchange-2020-11-11.json'
+EXCHANGE_RATE_FILE         = 'backup-exchange-rate.json'
+EXCHANGE_RATE_TEST_FILE    = 'test-data-exchange-rate-2024-09-26.json'
+#EXCHANGE_RATE_TEST_FILE   = 'test-data-fixer-exchange-2020-11-11.json'
 
 #
 # PPP data from IMF API
 #
 PPP_DATA_URL              = 'https://www.imf.org/external/datamapper/api/v1/PPPEX'  # for all countries and all periods
 INFLATION_RATIO_API       = 'https://www.imf.org/external/datamapper/api/v1/PCPIPCH/USA' # inflation ratio of average in the period
-PPP_DATA_FILE             = 'data/backup-ppp-data.json'
-PPP_DATA_TEST_FILE        = 'data/test-data-ppp-data-2024-09-26.json'
-INFLATION_RATIO_FILE      = 'data/backup-inflation-ratio.json'
-INFLATION_RATIO_TEST_FILE = 'data/test-data-inflation-ratio-2024-09-26.json'
-ICP_METADATA_FILE         = 'data/Data_Extract_From_ICP_2017_Metadata.csv'
-ICP_METADATA_FIX_FILE     = 'data/Data_Extract_From_ICP_Fix.csv'
+PPP_DATA_FILE             = 'backup-ppp-data.json'
+PPP_DATA_TEST_FILE        = 'test-data-ppp-data-2024-09-26.json'
+INFLATION_RATIO_FILE      = 'backup-inflation-ratio.json'
+INFLATION_RATIO_TEST_FILE = 'test-data-inflation-ratio-2024-09-26.json'
+ICP_METADATA_FILE         = 'Data_Extract_From_ICP_2017_Metadata.csv'
+ICP_METADATA_FIX_FILE     = 'Data_Extract_From_ICP_Fix.csv'
 
 #
 # Luncho API
