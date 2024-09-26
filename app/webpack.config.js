@@ -192,7 +192,8 @@ module.exports = ({ production }, { analyze, hmr, port, host }) => ({
     port: port || project.platform.port,
     host: host
   },
-  devtool: production ? undefined : 'cheap-module-source-map',
+  // eval-*-source-map are not compatible with web extensions as they use eval().
+  devtool: production ? undefined : 'source-map',
   module: {
     rules: [
       // CSS required in JS/TS files should use the style-loader that auto-injects it into the website
