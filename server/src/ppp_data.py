@@ -171,7 +171,7 @@ def update_exchange_rate_in_Countries() -> None:
 
     with exchange_rate.global_variable_lock:
         for _country_code, country in Countries.items():
-            country.ppp = country.year_ppp.get(conf.This_Year, 0.0) if country.year_ppp else None # country's ppp of this year
+            country.ppp = country.year_ppp.get(conf.This_Year, 0.0) if country.year_ppp else 0.0 # country's ppp of this year
             country.exchange_rate = exchange_rate.exchange_rate_per_USD(country.currency_code)
             country.expiration = exchange_rate.expiration
 
