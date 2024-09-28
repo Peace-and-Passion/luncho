@@ -59,9 +59,15 @@ def test_server_api() -> None:
 
     response = client.get("/v1/all-luncho-data")
     assert response.status_code == 200
-    data2: dict[CountryCode, dict[str, Any]] = response.json()
+    data2: dict[CountryCode, LunchoData] = response.json()
     _Japan_test(data2['JP'])
     assert len(data2) > 150
+
+    # test ppp exist
+    ld: LunchoData
+    cc: str
+    for cc, ld in data2.items():
+        assert ld.get('ppp') != None
 
     response = client.get("/v1/luncho-data?dummydata=JP")
     assert response.status_code == 422
@@ -75,7 +81,7 @@ def _Japan_test(lunchoData: dict[str, Any]) -> None:
     assert lunchoData['continent_code'] == 'AS'
     assert lunchoData['currency_code']  == 'JPY'
     assert lunchoData['currency_name']  == 'Yen'
-    assert lunchoData['exchange_rate']  == 144.713
+    assert lunchoData['exchange_rate']  == 144.82208333
     assert lunchoData['ppp']            == 90.821   # 2024 JPN in data/dummy-ppp-data-2024-09-26.json
     assert lunchoData['dollar_per_luncho'] == 0.14954671741828893
     assert lunchoData['expiration']     > time.time() + 60*60 - 2
