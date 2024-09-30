@@ -11,11 +11,21 @@
    li {
      margin-bottom: 0.6rem;
    }
+   .small-vspace {
+     height: 1.0em !important;
+   }
+   .vspace {
+     height: 1.6em !important;
+   }
+
+   .large-vspace {
+     height: 3.0em !important;
+   }
   </style>
 
   <div class="container about">
     <h6 class="center">
-      HIRANO Satoshi Ph.D, <a target="_blank" href="https://request.land/help">Peace and Passion Research Institute</a>
+      Dr. HIRANO Satoshi, <a target="_blank" href="https://request.land/help">Peace and Passion Research Institute</a>
     </h6>
 
     <div class="valign-wrapper center">
@@ -61,11 +71,11 @@
       <h4>Luncho reflects the same value globally</h4>
 
       <p>
-        Luncho is a global value index that remains consistent across different currencies, adjusting for local price levels. With 100 Luncho, you can have an affordable lunch in countries like Japan, Brazil, the USA, and more. It does not include a drink and tip.
+        Luncho is a universal value index that remains consistent across different currencies, adjusting for local price levels. With 100 Luncho, you can have an affordable lunch in countries like Japan, Brazil, the USA, and more. It does not include a drink and tip.
       </p>
 
       <p>
-        For example, in Japan, 100 Luncho is equal to 1544 Yen (approximately $10.70 USD), while in Brazil it equates to 46.33 Reais ($8.37 USD). In the USA, 100 Luncho is about $17.00. Regardless of the currency, 100 Luncho always represents the same value.
+        For example, in Japan, 100 Luncho is equal to ${luncho.get_currency_from_luncho(100, 'JP') & async } Yen (approximately $${luncho.get_US_dollar_from_luncho(100, 'JP') & async} USD), while in Brazil it equates to ${luncho.get_currency_from_luncho(100, 'BR') & async } Reais ($${luncho.get_US_dollar_from_luncho(100, 'BR') & async} USD). In the USA, 100 Luncho is about $${luncho.get_currency_from_luncho(100, 'US') & async }. Regardless of the currency, 100 Luncho always represents the same value.
       </p>
     </section>
 
@@ -81,107 +91,91 @@
       <h4>Solution and examples</h4>
 
       <p>
-        To solve to the IT gap, for example, anyone must have access to the latest digital services
-        for commerce, productivity, life, entertainment and so on at affordable prices. We know
-        people working on the digital services want to provide their services at appropriate prices
-        in countries, but we have not had a good measure to do so. That's the reason why we should
-        use the common unit of pricing that has the same value in every country.
+        To bridge the IT gap, everyone should have access to the latest digital services—whether for commerce, productivity, daily life, or entertainment—at affordable prices. While those providing digital services aim to price their offerings appropriately across different countries, a reliable measure for doing so has been lacking.
       </p>
 
-      <p>Luncho is a universal value index among currencies made for that. A luncho value shows the
-        same value in every country taking its price levels into account. Because it doesn't depend on a
-        specific currency, it's neutral and fair.
+      <p>Luncho is a universal value index designed to provide consistent price comparisons across currencies, accounting for local price levels and inflation. Since it isn’t tied to a specific currency, Luncho ensures neutrality and fairness.
       </p>
+      <div class="vspace"></div>
+
+      <h5>Salesforce</h5>
 
       <p>
-        For instance, Salesforce provides great IT services for sales. They provide Professional sales cloud for <a href="https://www.salesforce.com/editions-pricing/sales-cloud" target="_blank">$75 per user per month in the world</a>.</p>
-      <p>$75 would be fine for people in the US, but how about people in Pakistan? The price level of Pakistan is one of five of the US. </p>
-
+        Take Salesforce, for example, which offers its Professional Sales Cloud at <a href="https://www.salesforce.com/editions-pricing/sales-cloud" target="_blank">$${saleForce_USD} per user per month</a> globally. While $${saleForce_USD} may be reasonable for users in the US, it’s quite different for those in Pakistan, where the price level is about one-fifth of that in the US.
+      </p>
       <p>
-        In such case they can define their pricing in Luncho. You can find that $75 is 941 Luncho on the converter and imagine that the 941 Luncho is for about 10 lunches.</p>
+        By using Luncho, companies can set their pricing more equitably. For instance, $${saleForce_USD} is equivalent to ${saleForce_luncho} Luncho. Since ${saleForce_luncho} Luncho represents the cost of around ${saleForce_lunch} lunches in the US, the converter reveals that the equivalent price in Pakistan would be ${luncho.get_currency_from_luncho(saleForce_luncho, 'PK') & async} Pakistan Rupees, which also covers ${saleForce_lunch} lunches, or about $${luncho.get_US_dollar_from_luncho(saleForce_luncho, 'PK') & async} USD. This approach adjusts pricing to reflect local living costs.
 
-      <p>The converter teaches that 941 Luncho is 3873 Pakistan Rupee. That is for about 10 lunches and $13.7 USD.</p>
-
-      <p>Also in Switzerland 941 Luncho is 61.4 Euro. That is also for about 10 lunches and $65 USD.</p>
+        <p>In Switzerland, ${saleForce_luncho} Luncho equals ${luncho.get_currency_from_luncho(saleForce_luncho, 'CH') & async} Euro, which also covers about ${saleForce_lunch} lunches and equates to $${luncho.get_US_dollar_from_luncho(saleForce_luncho, 'CH') & async} USD.</p>
 
       <dl>
         <dt>In the US</dt>
-        <dd>$75 per month, (937 Luncho)</dd>
+        <dd>$${saleForce_USD} per month, (${saleForce_luncho} Luncho)</dd>
         <dt>In Pakistan</dt>
-        <dd>3872 Rupee per month (937 Luncho, $13.57 USD)</dd>
+        <dd>${luncho.get_currency_from_luncho(saleForce_luncho, 'PK') & async} Rupee per month (${saleForce_luncho} Luncho, $${luncho.get_US_dollar_from_luncho(saleForce_luncho, 'PK') & async} USD)</dd>
         <dt>In Switzerland</dt>
-        <dd>76.27 Swiss Franc per month (937 Luncho, $84.27 USD)</dd>
+        <dd>${luncho.get_currency_from_luncho(saleForce_luncho, 'CH') & async} Swiss Franc per month (${saleForce_luncho} Luncho, $${luncho.get_US_dollar_from_luncho(saleForce_luncho, 'CH') & async} USD)</dd>
       </dl>
+      <div class="vspace"></div>
 
-      <p>Another example is the payment of workers' wage. You can define a pay in Luncho, 50,000 Luncho for example, for a job. All workers for the job who live in different countries will experience the same living standard.</p>
+      <h5>Workers' wage</h5>
+
+      <p>Another example is paying workers' wages. You can set wages in Luncho, such as ${wage_luncho | numberFormat:'0,000'} Luncho for a job. This ensures that workers in different countries experience the same living standard.</p>
 
       <dl>
         <dt>In Philippines</dt>
-        <dd>Job A:  75194 Philippine Piso per month (50000 Luncho, $1347 USD)</dd>
+        <dd>Job A:  ${luncho.get_currency_from_luncho(wage_luncho, 'PH') & async} Philippine Piso per month (50000 Luncho, $${luncho.get_US_dollar_from_luncho(wage_luncho, 'PH') & async} USD)</dd>
         <dt>In Japan</dt>
-        <dd>Job A:  351,599 Yen per month (50000 Luncho, $2517 USD)</dd>
+        <dd>Job A:  ${luncho.get_currency_from_luncho(wage_luncho, 'JP') & async} Yen per month (50000 Luncho, $${luncho.get_US_dollar_from_luncho(wage_luncho, 'JP') & async} USD)</dd>
         <dt>In the US</dt>
-        <dd>Job A:  $4,003 USD per month, (50000 Luncho)</dd>
+        <dd>Job A:  $${luncho.get_currency_from_luncho(wage_luncho, 'US') & async} USD per month, (50000 Luncho)</dd>
       </dl>
     </section>
 
     <section>
-      <h4>Luncho[50%]: Partial adoption with factor</h4>
+      <h4>Luncho[50%]: Partial adoption with adjustment factor</h4>
 
-      <p>What if Salesforce thinks that the $13.7 USD would be too cheap for their product in Pakistan, as the price in the US is $75?</p>
+      <p>What if Salesforce feels that $${luncho.get_US_dollar_from_luncho(saleForce_luncho, 'PK') & async} USD is too low for their product in Pakistan, compared to $${saleForce_USD} in the US?</p>
 
-      <p>They can use the <i>factor slider</i> in the <a href="countries">countries page</a> to find out prices that are compatible with profit and equality in countries.</p>
+      <p>They can use the <i>factor slider</i> on the <a href="countries">countries page</a> to find prices that balance profitability and fairness across countries.</p>
 
-      <p>You will see that the graph has a red line and it moves according to the slider value. Luncho[100%] takes the price level into account 100%, while Luncho[0%] does not at all. As its pivot is the United States, the values of countries above the US are decreased, while the values of countries below US are increased.</p>
+      <p>You'll notice a red line on the graph that adjusts based on the slider value. Luncho[100%] fully accounts for price levels, while Luncho[0%] ignores them. The United States serves as the pivot point—prices in countries with higher cost levels than the US are reduced, while those with lower cost levels are increased.</p>
 
-      <p>Here are reculculated values with Luncho[50%].</p>
+      <p>Below are recalculated values using Luncho[50%].</p>
 
       <dl>
         <dt>In the US</dt>
-        <dd>$75 per month, (937 Luncho)</dd>
+        <dd>$${saleForce_USD} per month, (${saleForce_luncho} Luncho)</dd>
         <dt>In Pakistan</dt>
-        <dd>12635 Rupee per month (937 Luncho, $44.29 USD)</dd>
+        <dd>${luncho.get_currency_from_luncho(saleForce_luncho, 'PK', 0.5) & async} Rupee per month (${saleForce_luncho} Luncho, $${luncho.get_US_dollar_from_luncho(saleForce_luncho, 'PK', 0.5) & async} USD)</dd>
         <dt>In Switzerland</dt>
-        <dd>72.08 Swiss Franc per month (937 Luncho, $79.64 USD)</dd>
+        <dd>${luncho.get_currency_from_luncho(saleForce_luncho, 'CH', 0.5) & async} Swiss Franc per month (${saleForce_luncho} Luncho, $${luncho.get_US_dollar_from_luncho(saleForce_luncho, 'CH', 0.5) & async} USD)</dd>
       </dl>
 
-      <p>Note that the new value $44.38 USD is the middle of the US price $75 and the original value $13.7 without factor in Pakistan, because the factor is 50%.</p>
+      <p>Note that the new value $${luncho.get_US_dollar_from_luncho(saleForce_luncho, 'PK', 0.5) & async} USD is the middle of the US price $${saleForce_USD} and the original value $${luncho.get_US_dollar_from_luncho(saleForce_luncho, 'PK') & async} without factor in Pakistan, because the factor is 50%.</p>
     </section>
 
     <section>
       <h4>Requestland with Luncho</h4>
 
-      <p><a target="_blank" href="https://request.land">Requestland</a> is a map and request based marketplace by Dr Hirano with <i>Peace and Passion</i> for the next
+      <p><a target="_blank" href="https://request.land">Requestland</a> is a map and request based marketplace by the same author at Peace and Passion for the next
         generation. It has a mechanism of resolving the inequality problem and encouraging local
         economies.</p>
 
-      <p>You can see how Luncho is used on <a target="_blank" href="https://request.land/web/en/sell/fees.html">its fees page for sellers</a>.</p>
+      <p>You can see how Luncho is used on <a target="_blank" href="https://request.land/help/ja/docs/fees-sell.html">its fees page for sellers</a>.</p>
     </section>
 
     <section>
       <h4>Grow your business with Luncho</h4>
       <p>
-        Once you use Luncho in your pricing page, people in developing countries who are not able to
-        buy your digital service will afford to buy it. Luncho will accelerate the growth of
-        your user base as opposed to your revenue beyond the current ones without Luncho.
+        By incorporating Luncho into your pricing, you'll make your digital services more accessible to people in developing countries who previously couldn't afford them. Luncho helps expand your user base by aligning with local purchasing power, promoting growth in your overall customer reach rather than just increasing revenue from existing markets.
       </p>
-    </section>
-
-    <section>
-      <h4 class="">Open source project</h4>
-
-      <ul class="browser-default">
-        <li><a target="_blank" href="https://luncho-de-peace.org">The Luncho server</a> provides data conversion between Luncho and currencies, searching, and sorting.</li>
-        <li>The Luncho server provides <a target="_blank" href="https://luncho-de-peace.org/redoc">a set of REST API for clients</a>.</li>
-        <li>Client libraries for several programming languages, the source code of the Luncho
-          server and the Luncho app are available at <a target="_blank" href="https://github.com/Peace-and-Passion/luncho">the Luncho repository on Github</a>.</li>
-      </ul>
     </section>
 
     <section>
       <h4>How does it work?</h4>
 
-      <p><b>In the base year of 2019 (pre-Corona), 100 Luncho was equivalent to $12.20 USD. The value of Luncho fluctuates daily in response to inflation rates. As of September 2024, 100 Luncho is valued at $14.95 USD.</b></p>
+      <p><b>In the base year of 2019 (pre-Corona), 100 Luncho was defined to be equivalent to $12.20 USD. The value of Luncho fluctuates daily in response to inflation rates. As of September 2024, 100 Luncho is valued at $14.95 USD.</b></p>
 
       <pre>
     In 2019:                           100 Luncho = $12.20
@@ -190,6 +184,7 @@
     Inflation rate in 2022: 8.00%  →  100 Luncho = $13.96
     Inflation rate in 2023: 4.10%  →  100 Luncho = $14.53
     Inflation rate in 2024: 2.90%  →  100 Luncho = $14.95
+    ...
       </pre>
 
       <p>
@@ -197,7 +192,7 @@
       </p>
 
       <p>
-        PPP represents a theoretical exchange rate that reflects the relative cost of goods and services between countries, compared to the US Dollar. We use PPP data from the <a target="_blank" href="https://www.imf.org/external/datamapper/PPPEX@WEO/OEMDC/ADVEC/WEOWORLD">IMF World Economic Outlook Database</a>, based on the <a target="_blank" href="https://www.worldbank.org/en/programs/icp">International Comparison Program (ICP)</a> led by the World Bank. The ICP tracks very wide range of price levels for thousands of goods like food, medical services, and more every five years. IMF data is updated annually using each country's deflator.
+        PPP represents a theoretical exchange rate that reflects the relative cost of goods and services between countries, compared to the US Dollar. We use PPP data from the <a target="_blank" href="https://www.imf.org/external/datamapper/PPPEX@WEO/OEMDC/ADVEC/WEOWORLD">IMF World Economic Outlook Database</a>, based on the <a target="_blank" href="https://www.worldbank.org/en/programs/icp">International Comparison Program (ICP)</a> led by the World Bank. The ICP tracks very wide range of price levels for thousands of goods like food, medical services, and more every five years. IMF data is updated periodically using each country's deflator.
       </p>
 
       <p>
@@ -208,6 +203,7 @@
         local_currency_value = luncho_value * PPP * Dollar_per_Luncho
       </p>
     </section>
+
     <section id="data">
       <h4><a target="_blank" href="https://github.com/Peace-and-Passion/luncho/tree/master/server/data">Data</a></h4>
 
@@ -246,7 +242,6 @@
       <h4>Limitations</h4>
 
       <ul class="browser-default">
-        <li></li>
         <li>
           While you can expect to have an affordable lunch for local residents with 100 Luncho, restaurants catering to tourists tend to be much more expensive.
         </li>
@@ -258,7 +253,7 @@
         </li>
       </ul>
       <p>
-        Issues must be submitted on <a target="_blank" href="https://github.com/Peace-and-Passion/luncho/issues">the issues page on GitHub</a>. English corrections are also welcome.
+        Please submit sssues on <a target="_blank" href="https://github.com/Peace-and-Passion/luncho/issues">the issues page on GitHub</a>.
       </p>
     </section>
 
@@ -272,6 +267,17 @@
     </section>
 
     <section>
+      <h4 class="">Open source project</h4>
+
+      <ul class="browser-default">
+        <li><a target="_blank" href="https://luncho-de-peace.org">The Luncho server</a> provides data conversion between Luncho and currencies, searching, and sorting.</li>
+        <li>The Luncho server provides <a target="_blank" href="https://luncho-de-peace.org/redoc">a set of REST API for clients</a>.</li>
+        <li>Client libraries for several programming languages, the source code of the Luncho
+          server and the Luncho app are available at <a target="_blank" href="https://github.com/Peace-and-Passion/luncho">the Luncho repository on Github</a>.</li>
+      </ul>
+    </section>
+
+    <section>
       <h4> Acknowledgments</h4>
 
       <ul class="browser-default">
@@ -279,13 +285,14 @@
         <li>The Aurelia core team and contributors for <a target="_blank" href="https://aurelia.io/">Aurelia JavaScript framework</a></li>
         <li><a target="_blank" href="https://materializecss.com/">MaterializeCSS</a> and <a target="_blank" href="https://aurelia-ui-toolkits.github.io/demo-materialize/"> Aurelia Materialize Bridge</a> for CSS</li>
         <li><a target="_blank" href="exchangerate.host">https://exchangerate.host</a> for free exchange rates</li>
-        <li><a target="_blank" href="https://www.aist.go.jp/">AIST</a> and <a target="_blank" href="https://unit.aist.go.jp/hiiri/index-en.html">Human Informatics and Interaction Research Institute</a> for support</li>
+        <li>Dr. Hirano created Luncho when he was a research scientist at <a target="_blank" href="https://www.aist.go.jp/">The National Institute of Advanced Industrial Science and Technology (AIST), Japan</a>.</li>
       </ul>
     </section>
 
     <section>
       <h4>Alternatives</h4>
       <ul class="browser-default">
+        <li><a target="_blank" href="https://www.numbeo.com/cost-of-living">NUMBEO</a> is a crowd-sourced global database of quality of life data:cost of living, housing indicators, perceived crime rates, healthcare quality, transport quality, and other statistics.</li>
         <li><a target="_blank" href="https://www.economist.com/big-mac-index">The Big Mac index by The Economist</a> (<a target="_blank" href="https://github.com/TheEconomist/big-mac-data">Github</a>)</li>
         <li><a target="_blank" href="https://www.finder.com/ca/starbucks-index">The Starbucks Latte index</a></li>
         <li><a target="_blank" href="https://baike.baidu.com/item/%E6%A6%A8%E8%8F%9C%E6%8C%87%E6%95%B0/9227101?fr=aladdin">Chinese Zha cai pickle index</a></li>

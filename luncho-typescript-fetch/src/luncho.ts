@@ -7,6 +7,7 @@
 import { LunchoData } from './models';
 import { LunchoApi, LunchoDataRequest } from './apis/LunchoApi';
 import { Configuration } from './runtime';
+import { currencies } from 'country-data';
 
 export type CountryCode = string;
 
@@ -61,7 +62,13 @@ export class Luncho extends LunchoApi {
         return this.get_luncho_data({countryCode: countryCode})
             .then((lunchoData: LunchoData) => {
                 const local_currency_value = usdValue * lunchoData.ppp;
-                const local_currency_value_with_factor = usdValue - (usdValue - local_currency_value) * factor;
+                let local_currency_value_with_factor = usdValue - (usdValue - local_currency_value) * factor;
+                // round
+                if (currencies[lunchoData.currency_code].decimals == 0) {
+                    local_currency_value_with_factor = Math.round(local_currency_value_with_factor);
+                } else {
+                    local_currency_value_with_factor = Math.round(local_currency_value_with_factor * 100) / 100;
+                }
                 return local_currency_value_with_factor;
             });
     }
@@ -84,8 +91,14 @@ export class Luncho extends LunchoApi {
                 const dollar_value = local_currency_value / lunchoData.exchange_rate;
                 const dollar_value_with_factor = US_value - (US_value - dollar_value) * factor;
 
-                const local_currency_value_with_factor = dollar_value_with_factor * lunchoData.exchange_rate;
+                let local_currency_value_with_factor = dollar_value_with_factor * lunchoData.exchange_rate;
 
+                // round
+                if (currencies[lunchoData.currency_code].decimals == 0) {
+                    local_currency_value_with_factor = Math.round(local_currency_value_with_factor);
+                } else {
+                    local_currency_value_with_factor = Math.round(local_currency_value_with_factor * 100) / 100;
+                }
                 // const US_value = lunchoData.dollar_per_luncho * lunchoValue;
                 // const local_currency_value = US_value * lunchoData.ppp;
                 // const local_currency_value_with_factor = US_value - (US_value - local_currency_value) * factor;
@@ -103,7 +116,9 @@ export class Luncho extends LunchoApi {
     async get_luncho_from_currency(localValue: number, countryCode: string): Promise<number> {
         return this.get_luncho_data({countryCode: countryCode})
             .then((lunchoData: LunchoData) => {
-                const luncho_value = (localValue / lunchoData.ppp) / lunchoData.dollar_per_luncho;
+                let luncho_value = (localValue / lunchoData.ppp) / lunchoData.dollar_per_luncho;
+                // round
+                luncho_value = Math.round(luncho_value);
                 //const luncho_value = (localValue / lunchoData.ppp) / lunchoData.dollar_per_luncho;
                 return luncho_value;
             });
@@ -126,7 +141,9 @@ export class Luncho extends LunchoApi {
                     const US_value = lunchoData.dollar_per_luncho * lunchoValue;
                     const local_currency_value = US_value * lunchoData.ppp;
                     const dollar_value = local_currency_value / lunchoData.exchange_rate;
-                    const dollar_value_with_factor = US_value - (US_value - dollar_value) * factor;
+                    let dollar_value_with_factor = US_value - (US_value - dollar_value) * factor;
+                    // round
+                    dollar_value_with_factor = Math.round(dollar_value_with_factor * 100) / 100;
                     return dollar_value_with_factor;
                 } else
                     return 0.0

@@ -95,10 +95,6 @@ def test_load_data() -> None:
     4) test fetch with API failure and no backup file. Use existing Exchange_Rates.
     5) test fetch with API failure and no backup file and no existing Exchange_Rates. Abort.
 
-    6) test force_download from API without backup file.
-    7) test force_download but failure, then load from the backup file.
-    8) test force_download but failure and no backup file. Abort.
-
       Test:
         pytest src/test/test_server.py::test_load_data
     '''
