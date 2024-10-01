@@ -98,8 +98,9 @@ def load_metadata() -> None:
             Country_Metadata[country_code] = cast(CountryMetadataType, dict(data))
             #print(str(Country_Metadata))
         else:
-            print("No location information on IP address: " + country_code3)
+            #print("No location information on IP address: " + country_code3)
             #error(country_code3, "No location information on IP address")
+            pass
 
     for file in (conf.ICP_METADATA_FILE, conf.ICP_METADATA_FIX_FILE):
         with open(os.path.join(conf.Data_Dir, file), newline='', encoding="utf_8_sig") as metadata_file:
