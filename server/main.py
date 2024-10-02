@@ -50,7 +50,7 @@ app = FastAPI(
 
 # CORS
 allow_origins: list[str] = [
-    '*'    # serves API for any origin. # or origin such as "luncho-de-peace.org"
+    '*'    # serves API for any origin. # or origin such as "luncho-index.org"
 ]
 
 app.add_middleware(

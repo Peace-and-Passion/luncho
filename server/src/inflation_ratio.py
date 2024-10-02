@@ -1,7 +1,7 @@
 '''
   Luncho inflation ratio
 
-  See for detail:  https://luncho-de-peace.org/about#data
+  See for detail:  https://luncho-index.org/about#data
 
   @author HIRANO Satoshi
   @since  2024/09/25

@@ -26,7 +26,7 @@ class Foo {
   countryCode: string;
 
   async func() {
-      this.luncho = new Luncho(new Configuration({ basePath: "https://luncho-de-peace.org" }));
+      this.luncho = new Luncho(new Configuration({ basePath: "https://luncho-index.org" }));
 
       // estimate country code from IP address
       this.countryCode = await this.luncho.get_country_code();

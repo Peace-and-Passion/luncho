@@ -1,7 +1,7 @@
 '''
   Luncho PPP data
 
-  See for detail:  https://luncho-de-peace.org/about#data
+  See for detail:  https://luncho-index.org/about#data
 
   @author HIRANO Satoshi
   @since  2021/05/13
