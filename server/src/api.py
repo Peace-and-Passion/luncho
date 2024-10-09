@@ -52,7 +52,7 @@ async def country_code(
       - **return**: str. A country code.
     '''
 
-    print('X_Appengine_Country = [' + str(X_Appengine_Country) + ']')
+    #print('X_Appengine_Country = [' + str(X_Appengine_Country) + ']')
     return X_Appengine_Country or 'JP'
 
 

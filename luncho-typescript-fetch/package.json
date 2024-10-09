@@ -9,6 +9,10 @@
     "build": "tsc",
     "prepare": "npm run build"
   },
+  "dependencies": {
+    "country-data": "^0.0.31",
+    "underscore": "^1.13.7"
+  },
   "devDependencies": {
     "typescript": "^2.4"
   }

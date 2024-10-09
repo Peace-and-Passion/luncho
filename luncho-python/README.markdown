@@ -28,7 +28,7 @@
     from luncho_python.model.luncho_data import LunchoData
 
     self.api_client = luncho_python.ApiClient(luncho_python.Configuration(
-        host = "http://luncho-de-peace.org"  # "http://localhost:8000"
+        host = "http://luncho-index.org"  # "http://localhost:8000"
     ))
     self.luncho   = luncho.Luncho(self.api_client)
 

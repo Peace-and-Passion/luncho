@@ -3,7 +3,7 @@ import environment from './environment';
 import {PLATFORM} from 'aurelia-pal';
 import 'aurelia-materialize-bridge';
 import 'materialize-css';
-//import '../static/styles.css';
+// import '../static/styles.css';
 
 export function configure(aurelia: Aurelia) {
     aurelia.use

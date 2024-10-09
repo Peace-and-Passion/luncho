@@ -114,18 +114,14 @@
           <td if.bind="showCode">${country_code}</td>
           <td>${app.continents[continent_code]}</td>
 
-          <td if.bind="local_currency_value > 0 && app.countryData.currencies[currency_code].decimals == 0">${local_currency_value | numberFormat: '0'}</td>
-          <td if.bind="local_currency_value > 0 && app.countryData.currencies[currency_code].decimals == 1">${local_currency_value | numberFormat: '0.0'}</td>
-          <td if.bind="local_currency_value > 0 && app.countryData.currencies[currency_code].decimals == 2">${local_currency_value | numberFormat: '0.00'}</td>
-          <td if.bind="local_currency_value > 0 && app.countryData.currencies[currency_code].decimals == 3">${local_currency_value | numberFormat: '0.000'}</td>
+          <td if.bind="local_currency_value > 0">${local_currency_value}</td>
           <td if.bind="!(local_currency_value > 0)">?</td>
-
           <td>${currency_name}</td>
 
           <td if.bind="showCode">${currency_code}</td>
-          <td if.bind="dollar_value" class="${factor < 100 ? 'grey-text' : ''}"> $${dollar_value | numberFormat: '0.00'}</td>
+          <td if.bind="dollar_value" class="${factor < 100 ? 'grey-text' : ''}"> $${dollar_value}</td>
           <td else></td>
-          <td if.bind="factor < 100 && dollar_value_with_factor" > $${dollar_value_with_factor | numberFormat: '0.00'}</td>
+          <td if.bind="factor < 100 && dollar_value_with_factor" > $${dollar_value_with_factor}</td>
 
         </tr>
       </tbody>

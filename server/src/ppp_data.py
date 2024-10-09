@@ -1,7 +1,7 @@
 '''
   Luncho PPP data
 
-  See for detail:  https://luncho-de-peace.org/about#data
+  See for detail:  https://luncho-index.org/about#data
 
   @author HIRANO Satoshi
   @since  2021/05/13
@@ -98,8 +98,9 @@ def load_metadata() -> None:
             Country_Metadata[country_code] = cast(CountryMetadataType, dict(data))
             #print(str(Country_Metadata))
         else:
-            print("No location information on IP address: " + country_code3)
+            #print("No location information on IP address: " + country_code3)
             #error(country_code3, "No location information on IP address")
+            pass
 
     for file in (conf.ICP_METADATA_FILE, conf.ICP_METADATA_FIX_FILE):
         with open(os.path.join(conf.Data_Dir, file), newline='', encoding="utf_8_sig") as metadata_file:
@@ -171,7 +172,7 @@ def update_exchange_rate_in_Countries() -> None:
 
     with exchange_rate.global_variable_lock:
         for _country_code, country in Countries.items():
-            country.ppp = country.year_ppp.get(conf.This_Year, 0.0) if country.year_ppp else None # country's ppp of this year
+            country.ppp = country.year_ppp.get(conf.This_Year, 0.0) if country.year_ppp else 0.0 # country's ppp of this year
             country.exchange_rate = exchange_rate.exchange_rate_per_USD(country.currency_code)
             country.expiration = exchange_rate.expiration
 
