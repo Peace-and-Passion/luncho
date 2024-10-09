@@ -41,25 +41,16 @@
     </div>
 
     <section>
-      <h4 class="">A universal price comparison tool</h4>
+      <h4>Luncho reflects the same value globally</h4>
 
       <p>
-        Luncho is a global value index that allows you to compare prices across countries by adjusting for local cost of living. With 100 Luncho, you can enjoy an affordable lunch in countries like Japan, Brazil, the USA, and more. Note that the price typically excludes drinks and tips.
+        Luncho is a universal value index that remains consistent across different currencies, adjusting for local price levels. With 100 Luncho, you can have an affordable lunch in countries like Japan, Brazil, the USA, and more. It does not include a drink and tip.
       </p>
 
       <p>
-        For example, in Japan, 100 Luncho equals 1,544 Yen (about $10.70 USD), while in Brazil it amounts to 46.33 Reais ($8.37 USD). In the USA, 100 Luncho is roughly $17.00. Regardless of the currency, 100 Luncho represents the same purchasing power.
-      </p>
-
-      <p>
-        For example, in Japan, 100 Luncho is equal to 1544 Yen (approximately $10.70 USD), while in Brazil it equates to 46.33 Reais ($8.37 USD). In the USA, 100 Luncho is about $17.00. Regardless of the currency, 100 Luncho always represents the same value.
-      </p>
-
-      <p>
-        Luncho aims to reduce economic inequality between countries. To address inequality within a country, visit <a href="https://request.land/help" target="_blank">Requestland</a>.
+        For example, in Japan, 100 Luncho is equal to ${luncho.get_currency_from_luncho(100, 'JP') & async } Yen (approximately $${luncho.get_US_dollar_from_luncho(100, 'JP') & async} USD), while in Brazil it equates to ${luncho.get_currency_from_luncho(100, 'BR') & async } Reais ($${luncho.get_US_dollar_from_luncho(100, 'BR') & async} USD). In the USA, 100 Luncho is about $${luncho.get_currency_from_luncho(100, 'US') & async }. Regardless of the currency, 100 Luncho always represents the same value.
       </p>
     </section>
-
 
     <section>
       <h4> Is Luncho useful for you?</h4>
@@ -79,18 +70,6 @@
       Additionally, you are encouraged to suggest using Luncho to others.
 
       <p>Note: Luncho is not intended for use within a single country.</p>
-    </section>
-
-    <section>
-      <h4>Luncho reflects the same value globally</h4>
-
-      <p>
-        Luncho is a universal value index that remains consistent across different currencies, adjusting for local price levels. With 100 Luncho, you can have an affordable lunch in countries like Japan, Brazil, the USA, and more. It does not include a drink and tip.
-      </p>
-
-      <p>
-        For example, in Japan, 100 Luncho is equal to ${luncho.get_currency_from_luncho(100, 'JP') & async } Yen (approximately $${luncho.get_US_dollar_from_luncho(100, 'JP') & async} USD), while in Brazil it equates to ${luncho.get_currency_from_luncho(100, 'BR') & async } Reais ($${luncho.get_US_dollar_from_luncho(100, 'BR') & async} USD). In the USA, 100 Luncho is about $${luncho.get_currency_from_luncho(100, 'US') & async }. Regardless of the currency, 100 Luncho always represents the same value.
-      </p>
     </section>
 
     <section>
