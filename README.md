@@ -1,4 +1,4 @@
-# Luncho de Peace: Price level calculator
+# Luncho: A universal value index for price comparison across countries, accounting for prices levels and inflation.
 
 Pricing calculator that respects the price levels of countries using Purchase Power Parity (PPP). A library for currency conversion among local currency, US Dollar, and Luncho that is a universal value index. Also with an API server and an app.
 
@@ -80,11 +80,11 @@ your user base and your revenue beyond the current ones without Luncho.
 
 ## Note
 
-Luncho de Peace is a derived work of AIST Luncho.
+Luncho-index is a derived work of AIST Luncho.
 
 ## Author
 
-Dr HIRANO Satoshi, Peace and Passion, University of Tokyo, (AIST)
+Dr HIRANO Satoshi, Peace and Passion, University of Tokyo
 
 ## MIT License
 
