@@ -2,7 +2,7 @@
 
 Pricing calculator that respects the price levels of countries using Purchase Power Parity (PPP). A library for currency conversion among local currency, US Dollar, and Luncho that is a universal value index. Also with an API server and an app.
 
-- [Demo on the official Luncho de Peace web site](https://luncho-index.org)
+- [Demo on the official Luncho web site](https://luncho-index.org)
 - [Free Luncho API server](https://luncho-index.org/v1/luncho-data?country_code=JP)
 - [About Luncho, how it works](https://luncho-index.org/about)
 
