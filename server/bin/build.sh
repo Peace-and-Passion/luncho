@@ -23,11 +23,4 @@ fi
 yarn install
 yarn link
 
-
-cd ../app/src
-yarn link "luncho-typescript-fetch"
-#ln -sf ../../luncho-typescript-fetch/src luncho-typescript-fetch
-cd ..
-yarn install
-
 cd ../server
