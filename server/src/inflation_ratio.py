@@ -103,12 +103,12 @@ def calc_dollar_per_luncho(target_year: int) -> float:
         for year in range(conf.Base_Dollar_Per_Luncho_Year + 1, target_year + 1):
             ratio: float = InflationRatio['US'].get(year, 1.0) # 3.4%
             dollar_per_luncho *= 1.0 + ratio * 0.01           # 3.4 -> 103.4
-            logging.info(f'Inflation ratio in {year}: {ratio:.2f}, \t100 Luncho: ${dollar_per_luncho * 100:.2f}')
+            logging.info(f'Inflation rate in {year}: {ratio:.2f}%  →  100 Luncho: ${dollar_per_luncho * 100:.2f}')
     else:
         for year in range(conf.Base_Dollar_Per_Luncho_Year + 1, target_year + 1):
             ratio: float = InflationRatio['US'].get(year, 1.0) # 3.4%
             dollar_per_luncho /= 1.0 + ratio * 0.01           # 3.4 -> 103.4
-            logging.info(f'Inflation ratio in {year}: {ratio:.2f}, \t100 Luncho: ${dollar_per_luncho * 100:.2f}')
+            logging.info(f'Inflation rate in {year}: {ratio:.2f}%  →  100 Luncho: ${dollar_per_luncho * 100:.2f}')
 
     return dollar_per_luncho
 
