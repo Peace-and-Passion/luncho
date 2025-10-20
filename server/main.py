@@ -16,7 +16,7 @@ import logging
 from threading import Thread
 from typing import List, Dict, Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
@@ -70,6 +70,13 @@ app.add_middleware(
     allow_methods=["GET"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def add_my_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["Cache-Control"] = "max-age=300"    # 5 min cache
+    # response.headers["Cache-Control"] = "no-cache, no-store"
+    return response
 
 # static files in static dir
 #app.mount("/static", StaticFiles(directory="static"), name="static")
