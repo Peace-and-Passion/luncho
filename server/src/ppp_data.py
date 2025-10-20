@@ -16,6 +16,8 @@ import logging
 import os
 import re
 import time
+import traceback
+import sys
 from typing import cast, Any, TypedDict
 
 import pycountry
@@ -138,16 +140,21 @@ def load_ppp_data(force_download: bool = False, use_test_data: bool = False) -> 
             else:
                 continent_code = pycountry_convert.country_alpha2_to_continent_code(country_code)
 
-            Countries[country_code] = Country(
-                year_ppp = year_ppp,
-                country_code = country_code,
-                currency_code = Country_Metadata[country_code]['currency_code'],
-                continent_code = continent_code,
-                currency_name = Country_Metadata[country_code]['currency_name'],
-                country_name = Country_Metadata[country_code]['name'],
-                dollar_per_luncho = conf.Dollar_Per_Luncho,
-            )
-            CountryCode_Names[country_code] = Country_Metadata[country_code]['name']
+            try:
+                Countries[country_code] = Country(
+                    year_ppp = year_ppp,
+                    country_code = country_code,
+                    currency_code = Country_Metadata[country_code]['currency_code'],
+                    continent_code = continent_code,
+                    currency_name = Country_Metadata[country_code]['currency_name'],
+                    country_name = Country_Metadata[country_code]['name'],
+                    dollar_per_luncho = conf.Dollar_Per_Luncho,
+                )
+                CountryCode_Names[country_code] = Country_Metadata[country_code]['name']
+            except Exception:
+                logging.error(f'process_ppp_data(): Ignoring country_code {country_code}. To fix, add the country in server/data/Data_Extract_From_ICP_Fix.csv')
+
+                # ignore data with error
 
             if source != 'backup' or not last_load:
                 last_load = time.time()
