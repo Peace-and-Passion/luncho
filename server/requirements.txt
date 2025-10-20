@@ -6,6 +6,7 @@ mypy
 email-validator
 fastapi
 fastapi-utils
+google-cloud-logging
 google-cloud-storage
 gunicorn
 #../luncho_python  # don't include for GAE

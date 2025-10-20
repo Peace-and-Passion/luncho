@@ -21,19 +21,29 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
+import google.cloud.logging
+
 #pylint: disable=wrong-import-position
 import conf
 from src import api, ppp_data, exchange_rate, inflation_ratio
 
-root = logging.getLogger()
-root.setLevel(logging.INFO)
-#root.setLevel(logging.DEBUG)
-handler = logging.StreamHandler(sys.stdout)
-handler.setLevel(logging.INFO)
-handler2 = logging.StreamHandler(sys.stderr)
-handler2.setLevel(logging.ERROR)
-root.addHandler(handler)
-root.addHandler(handler2) # error logs
+# Instantiates a client
+client = google.cloud.logging.Client()
+
+# Setup Google Cloud Logging handler
+client.setup_logging()
+
+# or, use the standard logging
+#
+# root = logging.getLogger()
+# root.setLevel(logging.INFO)
+# #root.setLevel(logging.DEBUG)
+# handler = logging.StreamHandler(sys.stdout)
+# handler.setLevel(logging.INFO)
+# handler2 = logging.StreamHandler(sys.stderr)
+# handler2.setLevel(logging.ERROR)
+# root.addHandler(handler)
+# root.addHandler(handler2) # error logs
 
 app = FastAPI(
     title="Luncho server converts between local currency and Universal Luncho index for the economic inequality problem",
