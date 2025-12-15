@@ -21,7 +21,7 @@ instance_class: F1
 automatic_scaling:
   min_instances: 1
   max_instances: 1
-default_expiration: "10d"
+# default_expiration is 10 min
 
 handlers:
 # Luncho API
@@ -49,12 +49,12 @@ handlers:
   secure: always
   static_files: app-dist/index.html
   upload: app-dist/index.html
-  expiration: "1h"
+  expiration: 0s
 - url: /
   secure: always
   static_files: app-dist/index.html
   upload: app-dist/index.html
-  expiration: "1h"
+  expiration: 0s
 
 - url: /(.*\.(js|map|gif|png|jpg|ico|css))$
   secure: always
