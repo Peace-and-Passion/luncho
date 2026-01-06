@@ -21,8 +21,9 @@
     "aurelia-validation": "^2.0.0-rc2",
     "browser-locale": "^1.0.3",
     "chart.js": "^4.2.1",
-    "country-data": "^0.0.31",
+    "country-data-list": "^1.5.5",
     "jquery": "^3.5.1",
+    "luncho-typescript-fetch": "link:../luncho-typescript-fetch",
     "numeral": "^2.0.6",
     "tslib": "^2.3.1",
     "underscore": "^1.13.7"
@@ -30,7 +31,6 @@
   "resolutions": {
     "underscore": "^1.13.7"
   },
-  "peerDependencies": {},
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.5.2",
     "@types/jest": "^29.2.4",
@@ -96,8 +96,8 @@
     "yargs-parser": "^21.1.1"
   },
   "scripts": {
-    "build": "yarn link luncho-typescript-fetch; webpack --mode=production --env MODE=production",
-    "start": "yarn link luncho-typescript-fetch; webpack server",
+    "build": "webpack --mode=production --env MODE=production",
+    "start": "webpack server",
     "build:dev": "webpack",
     "analyze": "webpack --env production --analyze",
     "test": "au test"
@@ -149,5 +149,6 @@
       "text",
       "html"
     ]
-  }
+  },
+  "packageManager": "yarn@4.10.3+sha512.c38cafb5c7bb273f3926d04e55e1d8c9dfa7d9c3ea1f36a4868fa028b9e5f72298f0b7f401ad5eb921749eb012eb1c3bb74bf7503df3ee43fd600d14a018266f"
 }

@@ -21,6 +21,11 @@ if [ "`grep luncho src/index.ts`" == "" ]; then
 fi
 
 yarn install
+yarn build
 yarn link
+
+cd ../app
+yarn install
+yarn build
 
 cd ../server

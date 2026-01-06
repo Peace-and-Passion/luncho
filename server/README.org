@@ -84,11 +84,11 @@
        (restart bash to add rustup to PATH)
     rustup install nightly ; rustup default nightly
 
-  - Run the install script to install pypy3 and so on. Check it before run!
+  - Run the install script to install Python packages for both pypy3 and python.
 
-    bin/install-packages.sh
+    source bin/install-packages.sh
 
-  - You have luncho_pypyenv dir that includes site-packages.
+  - You have luncho_pyenv directory for python and luncho_pypyenv directory for pypy3 that include site-packages.
 
 ** Build client libraries and the app
 
@@ -96,7 +96,9 @@
 
 *** Run a local Luncho server
 
-  bin/start-gunicorn.sh
+  - start with python
+
+    bin/start-gunicorn.sh
 
   - Open a browser at [[http://localhost:8000/v1/all-luncho-data]] for test for API access.
   - See [[../app/README.org][../app/README.org]] how to run the Luncho app.
@@ -148,4 +150,4 @@ Dr HIRANO Satoshi, Peace and Passion, University of Tokyo, (AIST)
 ** [[../LICENSE][MIT License]]
 
 Copyright 2019-2022 The National Institute of Advanced Industrial Science and Technology (AIST), Japan
-Copyright 2024 Peace and Passion
+Copyright 2024-2025 Peace and Passion

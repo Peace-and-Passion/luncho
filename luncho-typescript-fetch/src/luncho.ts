@@ -7,7 +7,7 @@
 import { LunchoData } from './models';
 import { LunchoApi, LunchoDataRequest } from './apis/LunchoApi';
 import { Configuration } from './runtime';
-import { currencies } from 'country-data';
+import { currencies } from 'country-data-list';
 
 export type CountryCode = string;
 

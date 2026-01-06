@@ -10,7 +10,7 @@ import { Router, RouterConfiguration } from 'aurelia-router'
 import { PLATFORM } from 'aurelia-pal';
 import { Luncho, Configuration } from 'luncho-typescript-fetch';
 import * as browserLocale from 'browser-locale';
-import * as countryData from 'country-data';
+import * as countryData from 'country-data-list';
 import * as numeral from 'numeral';
 
 @autoinject
@@ -51,17 +51,20 @@ export class App {
     }
 
     /**
-       patch country-data to refrect recent changes
+       patch country-data-list to refrect recent changes
     */
     patchCountryData() {
 
         // São Tomé and Príncipe dobra: STD -> STN (2018)
-        this.countryData.currencies['STN'] = this.countryData.currencies['STD']
-        this.countryData.currencies['STN'].decimals = 2
+        if (!this.countryData.currencies['STN']) {
+            this.countryData.currencies['STN'] = { ... this.countryData.currencies['STD']};
+            this.countryData.currencies['STN'].decimals = 2
+        }
 
-        // Belarusian ruble: BYR -> BYN (2016)
-        this.countryData.currencies['BYN'] = this.countryData.currencies['BYR']
-        this.countryData.currencies['BYN'].decimals = 2
+        // already done in country-data-list
+        // // Belarusian ruble: BYR -> BYN (2016)
+        // this.countryData.currencies['BYN'] = this.countryData.currencies['BYR']
+        // this.countryData.currencies['BYN'].decimals = 2
     }
 
     toggleSideNav() {
