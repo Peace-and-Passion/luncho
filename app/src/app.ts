@@ -10,7 +10,7 @@ import { Router, RouterConfiguration } from 'aurelia-router'
 import { PLATFORM } from 'aurelia-pal';
 import { Luncho, Configuration } from 'luncho-typescript-fetch';
 import * as browserLocale from 'browser-locale';
-import * as countryData from 'country-data-list';
+import { currencies } from 'country-data-list';
 import * as numeral from 'numeral';
 
 @autoinject
@@ -21,7 +21,7 @@ export class App {
     show = false;
     public taskQueue: TaskQueue;
     luncho: Luncho;
-    countryData = countryData
+    currencies = currencies;
     countryCode: string;
     continents = {
         'NA': 'North America',
@@ -55,16 +55,18 @@ export class App {
     */
     patchCountryData() {
 
-        // São Tomé and Príncipe dobra: STD -> STN (2018)
-        if (!this.countryData.currencies['STN']) {
-            this.countryData.currencies['STN'] = { ... this.countryData.currencies['STD']};
-            this.countryData.currencies['STN'].decimals = 2
-        }
+        // moved to luncho-typescript-fetch/src/luncho.ts
+        //
+        // // São Tomé and Príncipe dobra: STD -> STN (2018)
+        // if (!this.currencies['STN']) {
+        //     this.currencies['STN'] = { ... this.currencies['STD']};
+        //     this.currencies['STN'].decimals = 2
+        // }
 
         // already done in country-data-list
         // // Belarusian ruble: BYR -> BYN (2016)
-        // this.countryData.currencies['BYN'] = this.countryData.currencies['BYR']
-        // this.countryData.currencies['BYN'].decimals = 2
+        // this.currencies['BYN'] = this.currencies['BYR']
+        // this.currencies['BYN'].decimals = 2
     }
 
     toggleSideNav() {

@@ -18,7 +18,7 @@ export class Countries {
     usdString: string;              // $123.45 in USD
     factor: number = 100;           // Factor value in percent. 0 - 100
 
-    lunchoDatas: LunchoData[];      // this is the table data.
+    lunchoDataOutput: LunchoData[];      // this is the table data.
     @observable $displayData: LunchoData[];   // table data after sorted by aurelia-table
     $displayDataChanged() {
         // sort changed. redraw graph
@@ -27,7 +27,7 @@ export class Countries {
         }
     }
     filters = [                     // sorter filsters for aurelia-table
-        {value: '', keys: ['country_name', 'currency_name']},
+        {value: '', keys: ['country_name', 'currency_name', 'currency_code', 'country_name_alpha']},
         {value: '', keys: ['continent_code']},
     ];
 
@@ -61,26 +61,35 @@ export class Countries {
         // remove Zinbabe
         delete this.luncho.lunchoDataCache['ZW'];
 
-        for (var countryCode of Object.keys(this.luncho.lunchoDataCache)) {
+        for (const countryCode of Object.keys(this.luncho.lunchoDataCache)) {
 
-            // destructive, but don't care
-            this.luncho.lunchoDataCache[countryCode]['local_currency_value'] =
-                await this.luncho.get_currency_from_luncho(this.lunchoValue, countryCode, this.factor/100.0);
+            const lunchoData: any = {};
 
-            this.luncho.lunchoDataCache[countryCode]['dollar_value'] =
-                await this.luncho.get_US_dollar_from_luncho(this.lunchoValue, countryCode);
+            try {
+                lunchoData.local_currency_value = await this.luncho.get_currency_from_luncho(this.lunchoValue, countryCode, this.factor / 100.0);
 
-            if (this.luncho.lunchoDataCache[countryCode]['dollar_value']) {
-                this.luncho.lunchoDataCache[countryCode]['dollar_value_with_factor'] =
-                    await this.luncho.get_US_dollar_from_luncho(this.lunchoValue, countryCode, this.factor/100.0);
+                lunchoData.dollar_value = await this.luncho.get_US_dollar_from_luncho(this.lunchoValue, countryCode);
+
+                if (lunchoData.dollar_value) {
+                    lunchoData.dollar_value_with_factor = await this.luncho.get_US_dollar_from_luncho(this.lunchoValue, countryCode, this.factor / 100.0);
+                }
+
+                lunchoData.emoji = getFlagEmoji(countryCode);
+
+                // Commit only if everything succeeded
+                this.luncho.lunchoDataCache[countryCode] = {
+                    ...this.luncho.lunchoDataCache[countryCode],
+                    ...lunchoData
+                };
+
+            } catch (e) {
+                console.warn(`Failed to update lunchoData for ${countryCode}`, e);
             }
-
-            this.luncho.lunchoDataCache[countryCode]['emoji'] = getFlagEmoji(countryCode);
         }
 
-        this.lunchoDatas = [];
+        this.lunchoDataOutput = [];
         for (var countryCode of Object.keys(this.luncho.lunchoDataCache)) {
-            this.lunchoDatas.push(this.luncho.lunchoDataCache[countryCode]);
+            this.lunchoDataOutput.push(this.luncho.lunchoDataCache[countryCode]);
         }
     }
 
