@@ -11,6 +11,20 @@ import { currencies } from 'country-data-list';
 
 export type CountryCode = string;
 
+// On 1 January 2018 São Tomé and Príncipe dobra (STD) was given the new ISO 4217 currency code STN.
+//
+// I have sent two PRs on Github to fix.
+//   https://github.com/Sonatrix/country-list/pull/29
+//   https://github.com/Sonatrix/country-list/pull/30
+if (!currencies['STN']) {
+    currencies['STN'] = {
+        code: 'STN',
+        decimals: 2,
+        name: 'São Tomé and Príncipe dobra',
+        number: '930',
+    }
+}
+
 /**
     Fast Luncho API client by caching.
         This class converts values between Luncho and a specified currency using cached
@@ -170,6 +184,7 @@ export class Luncho extends LunchoApi {
             .then((lunchoData: LunchoData) => {
                 this.lunchoDataCache[param.countryCode] = lunchoData;
                 if (localName && this.IntlCountryNames) {
+                    lunchoData['country_name_alpha'] = lunchoData.country_name;
                     lunchoData.country_name = this.IntlCountryNames.of(lunchoData.country_code);
                     lunchoData.currency_name = this.IntlCurrencyNames.of(lunchoData.currency_code);
                 }
@@ -196,6 +211,7 @@ export class Luncho extends LunchoApi {
                 this.allLunchoDatasExpiration = lunchoDatas['JP'].expiration;
                 if (localName && this.IntlCountryNames) {
                     for (var countryCode of Object.keys(this.lunchoDataCache)) {
+                        this.lunchoDataCache[countryCode]['country_name_alpha'] = this.lunchoDataCache[countryCode].country_name;
                         this.lunchoDataCache[countryCode].country_name = this.IntlCountryNames.of(countryCode);
                         this.lunchoDataCache[countryCode].currency_name = this.IntlCurrencyNames.of(this.lunchoDataCache[countryCode].currency_code);
                     }
