@@ -35,6 +35,8 @@ InflationRatio: dict[str, dict[int, float]] = {}
 last_load: float = 0              # time of the last load of InflationRatio
 data_source: str|None = None      # data source
 
+Ignore_CountryCode_List = ['ADVEC', 'AFQ']
+
 def load_inflation_ratio(force_download: bool = False, use_test_data: bool = False) -> None:
     def process_inflation_ratio(data: dict[str, Any]|None, source: str) -> bool:
         '''
@@ -60,9 +62,14 @@ def load_inflation_ratio(force_download: bool = False, use_test_data: bool = Fal
             assert False, 'Inflation ratio data is not available. Abort.'
 
         for country_code3, year_str_infl in data['values']['PCPIPCH'].items():
-            country_code: str = conf.IMF_Country_Code_Fix.get(country_code3) or pycountry_convert.country_alpha3_to_country_alpha2(country_code3)
-            if country_code != "??":
-                InflationRatio[country_code] = {int(year): value for year, value in year_str_infl.items()}
+            try:
+                country_code: str = conf.IMF_Country_Code_Fix.get(country_code3) or pycountry_convert.country_alpha3_to_country_alpha2(country_code3)
+                if country_code != "??":
+                    InflationRatio[country_code] = {int(year): value for year, value in year_str_infl.items()}
+            except KeyError:  # "Invalid Country Alpha-3 code: 'ADVEC'" for Advanced countries
+                if country_code3 not in Ignore_CountryCode_List:
+                    logging.error('Ignoring unknown country code: %s. Need to add it to Ignore_CountryCode_List in inflation_ratio.py?', country_code3)
+                    # ignore error and continue
 
         if source != 'backup' or not last_load:
             last_load = time.time()
