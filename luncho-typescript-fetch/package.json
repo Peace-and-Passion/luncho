@@ -10,7 +10,6 @@
     "prepare": "npm run build"
   },
   "dependencies": {
-    "country-data-list": "^1.5.5",
     "underscore": "^1.13.7"
   },
   "devDependencies": {

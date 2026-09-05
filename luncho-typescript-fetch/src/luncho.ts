@@ -7,22 +7,36 @@
 import { LunchoData } from './models';
 import { LunchoApi, LunchoDataRequest } from './apis/LunchoApi';
 import { Configuration } from './runtime';
-import { currencies } from 'country-data-list';
 
 export type CountryCode = string;
 
-// On 1 January 2018 São Tomé and Príncipe dobra (STD) was given the new ISO 4217 currency code STN.
-//
-// I have sent two PRs on Github to fix.
-//   https://github.com/Sonatrix/country-list/pull/29
-//   https://github.com/Sonatrix/country-list/pull/30
-if (!currencies['STN']) {
-    currencies['STN'] = {
-        code: 'STN',
-        decimals: 2,
-        name: 'São Tomé and Príncipe dobra',
-        number: '930',
+const currencyFractionDigits: { [currencyCode: string]: number } = {};
+
+/**
+ * Returns the ISO 4217 minor-unit digits supplied by the JavaScript runtime.
+ *
+ * @param currencyCode ISO 4217 currency code.
+ * @returns Number of fractional digits used for the currency.
+ */
+function fractionDigitsForCurrency(currencyCode: string): number {
+    if (currencyFractionDigits[currencyCode] === undefined) {
+        currencyFractionDigits[currencyCode] = new Intl.NumberFormat('en', {
+            style: 'currency', currency: currencyCode,
+        }).resolvedOptions().maximumFractionDigits;
     }
+    return currencyFractionDigits[currencyCode];
+}
+
+/**
+ * Rounds a value to the ISO 4217 minor-unit digits of a currency.
+ *
+ * @param value Value to round.
+ * @param currencyCode ISO 4217 currency code.
+ * @returns Rounded value.
+ */
+function roundForCurrency(value: number, currencyCode: string): number {
+    const multiplier = Math.pow(10, fractionDigitsForCurrency(currencyCode));
+    return Math.round(value * multiplier) / multiplier;
 }
 
 /**
@@ -76,14 +90,8 @@ export class Luncho extends LunchoApi {
         return this.get_luncho_data({countryCode: countryCode})
             .then((lunchoData: LunchoData) => {
                 const local_currency_value = usdValue * lunchoData.ppp;
-                let local_currency_value_with_factor = usdValue - (usdValue - local_currency_value) * factor;
-                // round
-                if (currencies[lunchoData.currency_code].decimals == 0) {
-                    local_currency_value_with_factor = Math.round(local_currency_value_with_factor);
-                } else {
-                    local_currency_value_with_factor = Math.round(local_currency_value_with_factor * 100) / 100;
-                }
-                return local_currency_value_with_factor;
+                const localCurrencyValueWithFactor = usdValue - (usdValue - local_currency_value) * factor;
+                return roundForCurrency(localCurrencyValueWithFactor, lunchoData.currency_code);
             });
     }
 
@@ -105,18 +113,11 @@ export class Luncho extends LunchoApi {
                 const dollar_value = local_currency_value / lunchoData.exchange_rate;
                 const dollar_value_with_factor = US_value - (US_value - dollar_value) * factor;
 
-                let local_currency_value_with_factor = dollar_value_with_factor * lunchoData.exchange_rate;
-
-                // round
-                if (currencies[lunchoData.currency_code].decimals == 0) {
-                    local_currency_value_with_factor = Math.round(local_currency_value_with_factor);
-                } else {
-                    local_currency_value_with_factor = Math.round(local_currency_value_with_factor * 100) / 100;
-                }
+                const localCurrencyValueWithFactor = dollar_value_with_factor * lunchoData.exchange_rate;
                 // const US_value = lunchoData.dollar_per_luncho * lunchoValue;
                 // const local_currency_value = US_value * lunchoData.ppp;
                 // const local_currency_value_with_factor = US_value - (US_value - local_currency_value) * factor;
-                return local_currency_value_with_factor;
+                return roundForCurrency(localCurrencyValueWithFactor, lunchoData.currency_code);
             });
     }
 

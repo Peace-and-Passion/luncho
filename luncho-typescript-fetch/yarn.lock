@@ -5,18 +5,10 @@ __metadata:
   version: 8
   cacheKey: 10c0
 
-"country-data-list@npm:^1.5.5":
-  version: 1.5.5
-  resolution: "country-data-list@npm:1.5.5"
-  checksum: 10c0/5d8e0ceb6e906d67d67d0377d1eb304915cd467fcfa9b8bbada2c566afd124a74e99be89677d4883a092bef8d53e3dbf35a628029da42ae6d64154a8e4e8e254
-  languageName: node
-  linkType: hard
-
 "luncho-typescript-fetch@workspace:.":
   version: 0.0.0-use.local
   resolution: "luncho-typescript-fetch@workspace:."
   dependencies:
-    country-data-list: "npm:^1.5.5"
     typescript: "npm:^2.4"
     underscore: "npm:^1.13.7"
   languageName: unknown
