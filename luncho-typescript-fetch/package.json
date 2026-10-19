@@ -10,7 +10,6 @@
     "prepare": "npm run build"
   },
   "dependencies": {
-    "underscore": "^1.13.7"
   },
   "devDependencies": {
     "typescript": "^2.4"
